@@ -1,0 +1,24 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "workbench.colorTheme": "Default Light Modern",
+  "editor.fontSize": 14,
+  "editor.fontFamily": "JetBrains Mono, monospace",
+  "editor.lineHeight": 20,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#a96fe0",
+    "titleBar.activeForeground": "#FFFFFF",
+    "titleBar.inactiveBackground": "#a96fe0",
+    "titleBar.inactiveForeground": "#FFFFFF"
+  },
+  "deno.enable": true,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ]
+}
