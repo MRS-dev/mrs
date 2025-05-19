@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
 import { queryKeys } from "../queryKeys";
+import { client } from "@/lib/apiClient";
 
 export const useExercise = (exerciseId: string) => {
   return useQuery({

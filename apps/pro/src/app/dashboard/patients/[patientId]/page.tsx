@@ -2,16 +2,19 @@
 import { useParams } from "next/navigation";
 import React from "react";
 import { usePatient } from "@/queries/patients/usePatient";
+import SessionCalendarCard from "./components/SessionCardCalendar";
+import SessionProgressCard from "./components/SessionProgressCard";
+import PainProgressCard from "./components/PainProgressCard";
 const PatientHome: React.FC = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const patient = usePatient(patientId);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-      {/* <SessionCalendarCard />
+      <SessionCalendarCard />
       <SessionProgressCard />
       <PainProgressCard />
-      <LastSessionPainCard patientId={patientId} />
+      {/* <LastSessionPainCard patientId={patientId} /> */}
       <div className="aspect-video rounded-xl border bg-green-500 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-1/4 h-full">
           <svg
@@ -41,17 +44,17 @@ const PatientHome: React.FC = () => {
               <div className="bg-yellow-600 w-10 h-10 rounded-xl"></div>
               <div className="flex flex-col h-full items-start justify-between ">
                 <div className="text-xs text-white font-medium">
-                  carte d'assurance maladie
+                  Carte d&apos;assurance maladie
                 </div>
                 <div className="flex flex-col items-start justify-end flex-1">
                   <span className="text-sm font-normal  leading-none">
-                    {patientQuery.data?.firstName}
+                    {patient.data?.firstName}
                   </span>
                   <span className="text-sm font-normal  leading-none">
-                    {patientQuery.data?.lastName}
+                    {patient.data?.lastName}
                   </span>
                   <span className="text-sm font-normal mt-2 leading-none">
-                    {patientQuery.data?.socialSecurityNumber}
+                    {patient.data?.socialSecurityNumber}
                   </span>
                 </div>
               </div>
@@ -65,8 +68,7 @@ const PatientHome: React.FC = () => {
             </div>
           </div>
         </div>
-      </div> */}
-      <h1>Bonjour {patient.data?.firstName}</h1>
+      </div>
     </div>
   );
 };

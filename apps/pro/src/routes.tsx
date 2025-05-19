@@ -10,20 +10,20 @@ export const ROUTES_DEF = {
   registrationRequest: "/registration-request",
   home: "/dashboard",
   invitationPatient: "/dashboard/invitation-patient/:token",
-  newPatient: "/dashboard/new-patient",
+  newPatient: "/dashboard/patients/new",
   patients: "/dashboard/patients",
   patient: "/dashboard/patients/:patientId",
   patientOverview: "/dashboard/patients/:patientId",
-  patientSessions: "/dashboard/patients/:patientId/sessions",
-  patientSession: "/dashboard/patients/:patientId/sessions/:sessionId",
+  patientWorkoutSessions: "/dashboard/patients/:patientId/workout-sessions",
+  patientWorkoutSession:
+    "/dashboard/patients/:patientId/workout-sessions/:sessionId",
   patientReports: "/dashboard/patients/:patientId/reports",
   sessions: "/dashboard/sessions",
   newSession: "/dashboard/sessions/new",
-  editSession: "/dashboard/sessions/edit/:sessionId",
-  sessionEditor: "/dashboard/sessions/edit/:sessionId",
+  editSession: "/dashboard/sessions/:sessionId/edit",
   session: "/dashboard/sessions/:sessionId",
-  programTemplates: "/dashboard/program-templates",
-  programTemplate: "/dashboard/program-templates/:programTemplateId",
+  workoutTemplates: "/dashboard/workout-templates",
+  workoutTemplate: "/dashboard/workout-templates/:workoutTemplateId",
   patientInformations: "/dashboard/patients/:patientId/informations",
   exercises: "/dashboard/exercises",
   exercise: "/dashboard/exercises/:exerciseId",
@@ -55,10 +55,10 @@ export const ROUTES = {
     ROUTES_DEF.patientOverview.replace(":patientId", patientId),
   patientInformations: (patientId: string) =>
     ROUTES_DEF.patientInformations.replace(":patientId", patientId),
-  patientSessions: (patientId: string) =>
-    ROUTES_DEF.patientSessions.replace(":patientId", patientId),
-  patientSession: (params: { patientId: string; sessionId: string }) =>
-    ROUTES_DEF.patientSession
+  patientWorkoutSessions: (patientId: string) =>
+    ROUTES_DEF.patientWorkoutSessions.replace(":patientId", patientId),
+  patientWorkoutSession: (params: { patientId: string; sessionId: string }) =>
+    ROUTES_DEF.patientWorkoutSession
       .replace(":patientId", params.patientId)
       .replace(":sessionId", params.sessionId),
   patientReports: (patientId: string) =>
@@ -69,6 +69,6 @@ export const ROUTES = {
     ROUTES_DEF.sessionEditor.replace(":sessionId", sessionId),
   editSession: (sessionId: string) =>
     ROUTES_DEF.editSession.replace(":sessionId", sessionId),
-  programTemplate: (programTemplateId: string) =>
-    ROUTES_DEF.programTemplate.replace(":programTemplateId", programTemplateId),
+  workoutTemplate: (workoutTemplateId: string) =>
+    ROUTES_DEF.workoutTemplate.replace(":workoutTemplateId", workoutTemplateId),
 };

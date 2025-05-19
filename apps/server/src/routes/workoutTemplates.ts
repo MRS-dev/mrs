@@ -2,14 +2,18 @@ import { Hono } from "hono";
 import { type HonoType } from "../lib/auth";
 import { db } from "../lib/db";
 import { zValidator } from "@hono/zod-validator";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql, or } from "drizzle-orm";
 import { roles } from "../lib/roles";
-import { activities } from "../schemas/activities";
 import {
   getQueryPagination,
   paginationSchema,
   toPaginatedResponse,
 } from "../lib/utils/paginations";
+import { workoutTemplates } from "../schemas/workoutTemplates";
+import {
+  createWorkoutTemplateSchema,
+  updateWorkoutTemplateSchema,
+} from "../validations/workoutTemplates";
 
 const workoutTemplatesRoutes = new Hono<HonoType>()
   .basePath("/workout-templates")
@@ -22,35 +26,104 @@ const workoutTemplatesRoutes = new Hono<HonoType>()
     if (!userId) {
       return c.json({ error: "User ID is not defined" }, 400);
     }
-
     // Get total count of activities
-    const totalActivities = await db
+    const totalWorkoutTemplates = await db
       .select({ count: sql`COUNT(*)` })
-      .from(activities)
+      .from(workoutTemplates)
+      .where(
+        or(
+          eq(workoutTemplates.authorId, userId),
+          eq(workoutTemplates.public, true)
+        )
+      )
       .then((result) => result[0]?.count || 0);
 
     // Get paginated list of activities
-    const activitiesList = await db
+    const workoutTemplatesList = await db
       .select()
-      .from(activities)
+      .from(workoutTemplates)
       .limit(limit)
+      .where(
+        or(
+          eq(workoutTemplates.authorId, userId),
+          eq(workoutTemplates.public, true)
+        )
+      )
       .offset(offset);
 
     return c.json(
       toPaginatedResponse({
-        items: activitiesList,
-        totalCount: Number(totalActivities),
+        items: workoutTemplatesList,
+        totalCount: Number(totalWorkoutTemplates),
         page,
         limit,
       })
     );
   })
   .get("/:id", async (c) => {
+    const user = c.get("user");
+    const userId = user?.id;
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+
     const { id } = c.req.param();
-    const activity = await db
+    const [workoutTemplate] = await db
       .select()
-      .from(activities)
-      .where(eq(workoutTemplates.id, id));
+      .from(workoutTemplates)
+      .where(
+        or(
+          and(
+            eq(workoutTemplates.id, id),
+            eq(workoutTemplates.authorId, userId)
+          ),
+          and(eq(workoutTemplates.id, id), eq(workoutTemplates.public, true))
+        )
+      );
+    return c.json(workoutTemplate);
+  })
+  .delete("/:id", async (c) => {
+    const { id } = c.req.param();
+    const user = c.get("user");
+    const userId = user?.id;
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+    await db
+      .delete(workoutTemplates)
+      .where(
+        and(eq(workoutTemplates.id, id), eq(workoutTemplates.authorId, userId))
+      );
+    return c.json({ message: "Workout template deleted" });
+  })
+  .post("/", zValidator("json", createWorkoutTemplateSchema), async (c) => {
+    const user = c.get("user");
+    const userId = user?.id;
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+    const { name, program } = c.req.valid("json");
+    const workoutTemplate = await db.insert(workoutTemplates).values({
+      name,
+      program,
+      authorId: userId,
+    });
+    return c.json(workoutTemplate);
+  })
+  .put("/:id", zValidator("json", updateWorkoutTemplateSchema), async (c) => {
+    const { id } = c.req.param();
+    const user = c.get("user");
+    const userId = user?.id;
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+    const { name, program } = c.req.valid("json");
+    const workoutTemplate = await db
+      .update(workoutTemplates)
+      .set({ name, program })
+      .where(
+        and(eq(workoutTemplates.id, id), eq(workoutTemplates.authorId, userId))
+      );
     return c.json(workoutTemplate);
   });
 

@@ -165,7 +165,7 @@ const exercisesRoutes = new Hono<HonoType>()
   })
   .get("/:id", async (c) => {
     const { id } = c.req.param();
-    const exercise = await db
+    const [exercise] = await db
       .select()
       .from(exercises)
       .where(eq(exercises.id, id));

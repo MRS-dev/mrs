@@ -13,6 +13,10 @@ import registrationRequestRoutes from "./routes/registrationRequests";
 import patientsRoutes from "./routes/patients";
 import exercisesRoutes from "./routes/exercises";
 import activitiesRoutes from "./routes/activities";
+import workoutTemplatesRoutes from "./routes/workoutTemplates";
+import workoutSessionsRoutes from "./routes/workoutSession";
+import messagesRoutes from "./routes/messages";
+import chatsRoutes from "./routes/chats";
 // Exemple de route RPC
 const app = new Hono<HonoType>()
   .use(
@@ -33,7 +37,10 @@ const app = new Hono<HonoType>()
   .route("/", patientsRoutes)
   .route("/", exercisesRoutes)
   .route("/", activitiesRoutes)
-  .route("/", workoutTemplatesRoutes);
+  .route("/", workoutTemplatesRoutes)
+  .route("/", workoutSessionsRoutes)
+  .route("/", messagesRoutes)
+  .route("/", chatsRoutes);
 
 export type AppType = typeof app;
 

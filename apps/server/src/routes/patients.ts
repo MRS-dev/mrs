@@ -11,6 +11,10 @@ import {
   toPaginatedResponse,
 } from "../lib/utils/paginations";
 import { zValidator } from "@hono/zod-validator";
+import {
+  createPatientSchema,
+  updatePatientSchema,
+} from "../validations/patients";
 
 const patientsRoutes = new Hono<HonoType>()
   .basePath("/patients")
@@ -90,6 +94,39 @@ const patientsRoutes = new Hono<HonoType>()
       .from(patients)
       .where(eq(patients.id, patientId));
 
+    return c.json(patient);
+  })
+  .post("/", zValidator("json", createPatientSchema), async (c) => {
+    const user = c.get("user");
+    const userId = user?.id;
+    const data = c.req.valid("json");
+
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+
+    const [patient] = await db.insert(patients).values(data).returning();
+    await db.insert(patientProRelations).values({
+      patientId: patient.id,
+      proId: userId,
+    });
+    return c.json(patient);
+  })
+  .put("/:patientId", zValidator("json", updatePatientSchema), async (c) => {
+    const user = c.get("user");
+    const userId = user?.id;
+    const { patientId } = c.req.param();
+    const data = c.req.valid("json");
+
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+
+    const patient = await db
+      .update(patients)
+      .set(data)
+      .where(eq(patients.id, patientId))
+      .returning();
     return c.json(patient);
   });
 

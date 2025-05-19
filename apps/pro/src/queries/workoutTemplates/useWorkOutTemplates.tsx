@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
+import { client } from "@/lib/apiClient";
 import { queryKeys } from "../queryKeys";
 
 export const useWorkoutTemplates = ({
@@ -12,7 +12,7 @@ export const useWorkoutTemplates = ({
   return useQuery({
     queryKey: queryKeys.workoutTemplates({ page, limit }),
     queryFn: async () => {
-      const response = await client.api.workoutTemplates.$get({
+      const response = await client.api["workout-templates"].$get({
         query: {
           page: page.toString(),
           limit: limit.toString(),

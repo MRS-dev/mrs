@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
+import { client } from "@/lib/apiClient";
 
 export const useInviteAdmin = () => {
   return useMutation({

@@ -1,60 +1,34 @@
-import { cn } from "@/lib/utils";
-import {
-  CustomCalendar,
-  CustomCalendarDay,
-  useCustomCalendarContext,
-} from "@/components/mrs/MrsCalendar";
-import { useMemo } from "react";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { endOfMonth, format, isSameDay, startOfMonth } from "date-fns";
+import { Button } from "@/components/ui/button";
 import { fr } from "date-fns/locale/fr";
 import { ROUTES } from "@/routes";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-
-// function CalendarDay({
-//   date,
-//   status,
-// }: {
-//   date: Date;
-//   status?: "success" | "error" | "normal" | undefined;
-// }) {
-//   return (
-//     <div
-//       className={cn(
-//         "mx-1 p-2 rounded-md flex justify-center items-center relative w-full",
-//         status === "success" && "bg-green-100",
-//         status === "error" && "bg-red-100",
-//         status === "normal" && "bg-primary/10"
-//       )}
-//     >
-//       <span>{date.getDate()}</span>
-//       {status === "success" && (
-//         <Check className="text-green-500 absolute top-1 right-1 size-2" />
-//       )}
-//       {status === "error" && (
-//         <X className="text-red-500 absolute top-1 right-1 size-2" />
-//       )}
-//       {status === "normal" && (
-//         <div className="bg-primary absolute top-1 right-1 w-1 h-1 rounded-full" />
-//       )}
-//     </div>
-//   );
-// }
+import {
+  CustomCalendarDay,
+  useCustomCalendarContext,
+  CustomCalendar,
+} from "@/components/mrs/MrsCalendar";
+import { useWorkoutSessions } from "@/queries/workoutSessions/useWorkoutSessions";
+import Link from "next/link";
 
 function SessionCalendarCard() {
   const { patientId } = useParams<{ patientId: string }>();
 
-  const filter = useMemo(() => {
-    return {
-      patientId,
-      date: { from: startOfMonth(new Date()), to: endOfMonth(new Date()) },
-    };
-  }, [patientId]);
-  const allSessions = sessionsQuery.data?.data || [];
-  const getSessionStatus = (session: ISession) => {
+  const sessionsQuery = useWorkoutSessions({
+    patientId,
+    from: startOfMonth(new Date()).toISOString(),
+    to: endOfMonth(new Date()).toISOString(),
+    limit: "1000",
+    page: "1",
+  });
+  const allSessions = sessionsQuery.data?.items || [];
+  const getSessionStatus = (sessionId: string) => {
+    const session = allSessions.find((session) => session.id === sessionId);
+    if (!session) return "pending";
     const reportCount = session.report?.exercises?.length || 0;
-    const exerciseCount = session.program.exercises.length;
-    const sessionEnded = exerciseCount === reportCount;
+    const exerciseCount = session.program?.exercises.length || 0;
+    // const sessionEnded = exerciseCount === reportCount;
     const exerciseCompleted = session.report?.exercises?.filter(
       (report) => report.status === "completed"
     );
@@ -64,7 +38,7 @@ function SessionCalendarCard() {
     if (exerciseCompleted?.length === exerciseCount) return "completed";
     if (exerciseNotDone?.length === exerciseCount) return "not_done";
     if (reportCount === exerciseCount) return "not_completed";
-    if (session.date < new Date()) return "missed";
+    if (new Date(session.date) < new Date()) return "missed";
     return "pending";
   };
   return (
@@ -103,10 +77,10 @@ function SessionCalendarCard() {
                         {format(date, "dd")}
                         <div className="flex flex-row gap-1">
                           {daySessions.map((session) => {
-                            const sessionStatus = getSessionStatus(session);
+                            const sessionStatus = getSessionStatus(session.id);
                             return (
                               <div
-                                key={session._id}
+                                key={session.id}
                                 className={cn(
                                   "h-2 w-2 rounded-full",
                                   sessionStatus === "completed" &&
@@ -171,7 +145,7 @@ function SessionCalendarCard() {
 
 const SessionCardCalendarHeader = () => {
   const { patientId } = useParams<{ patientId: string }>();
-  const { visibleMonth, setVisibleMonth } = useCustomCalendarContext();
+  const { visibleMonth } = useCustomCalendarContext();
   return (
     <div
       className={cn(
@@ -185,7 +159,7 @@ const SessionCardCalendarHeader = () => {
       </span>
       <div className="flex items-center gap-2">
         <Button variant="primary-light" size="sm" asChild>
-          <Link to={ROUTES.patientSessions(patientId)}>Planifier</Link>
+          <Link href={ROUTES.patientWorkoutSessions(patientId)}>Planifier</Link>
         </Button>
       </div>
     </div>

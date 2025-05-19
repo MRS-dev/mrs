@@ -51,7 +51,7 @@ const Patients: React.FC = () => {
           </SidebarLayoutHeader>
         }
       >
-        <div className="flex flex-1 flex-col gap-4 p-4 text-foreground">
+        <div className="flex flex-1 flex-col gap-4 text-foreground  p-6 xl:max-w-screen-lg lg:max-w-screen-md md:max-w-screen-sm mx-auto w-full">
           <MrsQuery
             query={patientsQuery}
             Data={
@@ -59,7 +59,7 @@ const Patients: React.FC = () => {
                 {patients?.map((patient) => (
                   <Link
                     key={patient.id}
-                    href={ROUTES.patientOverview(patient.id)}
+                    href={ROUTES.patient(patient.id)}
                     className={cn(
                       "col-span-1 bg-background rounded-xl border shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md cursor-pointer h-full"
                     )}

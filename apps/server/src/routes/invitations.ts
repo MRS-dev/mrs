@@ -7,6 +7,7 @@ import { invitations } from "../schemas/invitations";
 import { eq, and } from "drizzle-orm";
 import type { Roles } from "../lib/permissions";
 import { registrationRequests } from "../schemas/registrationRequests";
+import { chats } from "../schemas/chats";
 
 const invitationsRoutes = new Hono<HonoType>()
   .basePath("/invitations")
@@ -99,6 +100,7 @@ const invitationsRoutes = new Hono<HonoType>()
         .select()
         .from(registrationRequests)
         .where(eq(registrationRequests.invitationId, invitation.id));
+
       if (!invitation) {
         return c.json({ error: "Invitation not found" }, 404);
       }
@@ -118,7 +120,7 @@ const invitationsRoutes = new Hono<HonoType>()
         return c.json({ error: "Wrong email" }, 401);
       }
 
-      const user = await auth.api.createUser({
+      const { user } = await auth.api.createUser({
         body: {
           email,
           password,
@@ -130,10 +132,20 @@ const invitationsRoutes = new Hono<HonoType>()
         },
       });
 
+      const { firstName, lastName } = registrationRequest;
+
       await db
         .update(invitations)
         .set({ acceptedAt: new Date() })
         .where(eq(invitations.email, email));
+      await db
+        .insert(chats)
+        .values({
+          participants: [user.id],
+          lastUpdated: new Date(),
+          title: `Support - ${firstName} ${lastName}`,
+        })
+        .returning();
       return c.json(user);
     }
   );

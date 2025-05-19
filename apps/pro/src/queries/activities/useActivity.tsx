@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
+import { client } from "@/lib/apiClient";
 import { queryKeys } from "../queryKeys";
 
 export const useActivity = (activityId: string) => {

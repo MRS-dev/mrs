@@ -46,6 +46,7 @@
     "embla-carousel-react": "^8.6.0",
     "hono": "^4.7.9",
     "input-otp": "^1.4.2",
+    "libphonenumber-js": "^1.12.8",
     "lucide-react": "^0.510.0",
     "motion": "^12.12.1",
     "next": "15.3.2",

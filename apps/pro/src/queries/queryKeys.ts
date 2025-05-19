@@ -17,4 +17,12 @@ export const queryKeys = {
     "workoutTemplate",
     workoutTemplateId,
   ],
+  workoutSessions: (filter: unknown) => ["workoutSessions", filter],
+  workoutSession: (workoutSessionId: string) => [
+    "workoutSession",
+    workoutSessionId,
+  ],
+  chats: () => ["chats"],
+  chat: (chatId: string) => ["chat", chatId],
+  messages: (chatId: string) => ["messages", chatId],
 };

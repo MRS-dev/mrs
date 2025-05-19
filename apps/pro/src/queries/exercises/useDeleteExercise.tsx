@@ -1,6 +1,6 @@
 import { ApiMutationOptions } from "@/lib/query";
 import { useMutation } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
+import { client } from "@/lib/apiClient";
 
 export const useDeleteExercise = (
   options?: ApiMutationOptions<(typeof client.api.exercises)[":id"]["$delete"]>

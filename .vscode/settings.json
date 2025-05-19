@@ -10,10 +10,10 @@
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
   "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#1dffa1",
-    "titleBar.activeForeground": "#000000",
-    "titleBar.inactiveBackground": "#1dffa1",
-    "titleBar.inactiveForeground": "#000000"
+    "titleBar.activeBackground": "#0077ff",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#0077ff",
+    "titleBar.inactiveForeground": "#ffffff"
   },
   "deno.enable": true,
   "eslint.workingDirectories": [

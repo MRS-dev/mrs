@@ -146,7 +146,7 @@ const SidebarContent = () => {
         <SidebarLink to={ROUTES.patients} Icon={<Users />} label="Patients" />
 
         <SidebarLink
-          to={ROUTES.programTemplates}
+          to={ROUTES.workoutTemplates}
           Icon={<Waypoints />}
           label="Modèle de programme"
         />
