@@ -1,11 +1,16 @@
 {
-  "$schema": "https://turborepo.com/schema.json",
+  "$schema": "https://turborepo.org/schema.json",
   "ui": "stream",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "apps/server/dist/**",
+        "apps/server/.vercel/output/**"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -16,6 +21,22 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "server#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".vercel/output/**"],
+      "env": ["DATABASE_URL", "API_KEY"]
+    },
+    "pro#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_API_URL_PRO"]
+    },
+    "admin#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_API_URL_ADMIN"]
     }
-  }
+  },
+  "globalEnv": ["NODE_ENV"]
 }

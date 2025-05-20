@@ -1,6 +1,7 @@
 // src/lib/apiClient.ts
-import { AppType } from "../../server/src/index";
+
 import { hc } from "hono/client";
+import { AppType } from "../../index";
 
 export const client = hc<AppType>("http://localhost:3000", {
   init: {

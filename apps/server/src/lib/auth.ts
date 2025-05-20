@@ -16,6 +16,7 @@ export const auth = betterAuth({
     "http://localhost:3002",
     "http://localhost:5173",
     "https://mrs-o6rq2m90i-lympes-projects.vercel.app",
+    "https://mrs-admin-g8jrqwe35-lympes-projects.vercel.app",
   ],
   emailAndPassword: { enabled: true },
   advanced: { database: { generateId: false } },

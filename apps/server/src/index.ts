@@ -19,7 +19,12 @@ import chatsRoutes from "./routes/chats";
 import adminExercisesRoutes from "./routes/adminExercises";
 import adminProsRoutes from "./routes/adminPros";
 import adminActivitiesRoutes from "./routes/adminActivities";
-// Exemple de route RPC
+import { handle } from "hono/vercel";
+
+// Spécifiez 'edge' pour le runtime Edge de Vercel (recommandé)
+// Ou 'nodejs' si vous préférez/devez utiliser Node.js
+export const runtime = "edge";
+
 const app = new Hono<HonoType>({
   // getPath: (req) => {
   //   const url = new URL(req.url);
@@ -71,6 +76,25 @@ const app = new Hono<HonoType>({
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
   .route("/", adminActivitiesRoutes);
+
+app.get("/", (c) => {
+  return c.json({ message: "Hello from Hono on Vercel!" });
+});
+
+app.get("/users", (c) => {
+  // Votre logique pour /api/users
+  return c.json([{ id: 1, name: "John Doe" }]);
+});
+
+export default handle(app); // Cette méthode est souvent utilisée avec des configurations plus simples de `vercel.json` où le fichier lui-même est la fonction.
+// Pour être sûr, vérifiez la documentation la plus récente de Hono pour le déploiement "standalone" sur Vercel Edge.
+
+// Si la méthode ci-dessus ne fonctionne pas comme prévu ou si vous voyez des erreurs
+// liées à la manière dont Vercel essaie d'invoquer votre fonction,
+// vous pourriez avoir besoin d'une structure de fichier qui ressemble plus à une Vercel Serverless Function.
+// Par exemple, si Vercel attend un export par défaut qui est une fonction (req, res), vous pourriez
+// avoir besoin d'adapter légèrement.
+// Cependant, avec `hono/vercel` et la bonne config `vercel.json`, ça devrait marcher.
 
 export type AppType = typeof app;
 
