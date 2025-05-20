@@ -9,12 +9,7 @@ import { useMemo } from "react";
 import { Search, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/hooks/useModale";
-import {
-  MrsModal,
-  MrsModalContent,
-  MrsModalHeader,
-  MrsModalTitle,
-} from "../mrs/MrsModal";
+import { MrsModal, MrsModalContent, MrsModalTitle } from "../mrs/MrsModal";
 /**
  * Props génériques pour créer un Picker dans un Modal.
  * T représente le type de chaque élément (patient, user, produit, etc.).
@@ -86,6 +81,7 @@ export function PickerModal<T>({
   resultsCount,
 }: PickerModalProps<T>) {
   const modal = useModal();
+  const listboxId = "picker-modal-listbox";
 
   const handleItemSelect = (newValue: string) => {
     onSelect(newValue);
@@ -93,7 +89,7 @@ export function PickerModal<T>({
   };
   const currentValue = useMemo(() => {
     return items.find((item) => valueExtractor(item) === value) || null;
-  }, [items, value]);
+  }, [items, value, valueExtractor]);
 
   console.log("CURRENT_VALUE", currentValue);
   return (
@@ -108,6 +104,7 @@ export function PickerModal<T>({
         )}
         aria-expanded={modal.open}
         role="combobox"
+        aria-controls={listboxId}
       >
         <div className="flex flex-row items-center justify-start flex-1">
           {!!currentValue ? (
@@ -145,7 +142,7 @@ export function PickerModal<T>({
 
           {/* Corps du modal : la liste */}
           <div className="flex flex-col flex-1 overflow-hidden rounded-b-xl bg-muted/50">
-            <ScrollArea className="flex-1 overflow-auto">
+            <ScrollArea className="flex-1 overflow-auto" id={listboxId}>
               <div className="flex flex-col p-2 gap-2 ">
                 {items.map((item) => (
                   <div

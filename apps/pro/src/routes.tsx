@@ -65,8 +65,6 @@ export const ROUTES = {
     ROUTES_DEF.patientReports.replace(":patientId", patientId),
   patient: (patientId: string) =>
     ROUTES_DEF.patient.replace(":patientId", patientId),
-  sessionEditor: (sessionId: string) =>
-    ROUTES_DEF.sessionEditor.replace(":sessionId", sessionId),
   editSession: (sessionId: string) =>
     ROUTES_DEF.editSession.replace(":sessionId", sessionId),
   workoutTemplate: (workoutTemplateId: string) =>

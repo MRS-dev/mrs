@@ -15,52 +15,82 @@ import {
   createPatientSchema,
   updatePatientSchema,
 } from "../validations/patients";
+import { z } from "zod";
+import { invitations } from "../schemas/invitations";
+import { sendMail } from "../mail/mailer";
+import { mailTemplate } from "../mail/templates";
+import { pros } from "../schemas/pros";
 
 const patientsRoutes = new Hono<HonoType>()
   .basePath("/patients")
   .use("*", roles("pro"))
-  .get("/", zValidator("query", paginationSchema), async (c) => {
-    const user = c.get("user");
-    const userId = user?.id;
-    const { page, limit, offset } = getQueryPagination(c.req.valid("query"));
+  .get(
+    "/",
+    zValidator(
+      "query",
+      paginationSchema.extend({
+        search: z.string().optional(),
+      })
+    ),
+    async (c) => {
+      const user = c.get("user");
+      const userId = user?.id;
+      const { search } = c.req.valid("query");
+      const { page, limit, offset } = getQueryPagination(c.req.valid("query"));
 
-    if (!userId) {
-      return c.json({ error: "User ID is not defined" }, 400);
+      if (!userId) {
+        return c.json({ error: "User ID is not defined" }, 400);
+      }
+
+      const searchQuery = search ? `%${search}%` : null;
+      // Get the total count of patients
+      const totalPatients = await db
+        .select({ count: sql`COUNT(*)` })
+        .from(patientProRelations)
+        .where(
+          and(
+            eq(patientProRelations.proId, userId),
+            searchQuery
+              ? sql`(patients.first_name ILIKE ${searchQuery} OR patients.last_name ILIKE ${searchQuery})`
+              : sql`1=1`
+          )
+        )
+        .then((result) => result[0]?.count || 0);
+
+      // Get the paginated list of patients
+      const patientList = await db
+        .select({
+          id: patients.id,
+          firstName: patients.firstName,
+          lastName: patients.lastName,
+          birthDate: patients.birthDate,
+        })
+        .from(patients)
+        .leftJoin(
+          patientProRelations,
+          eq(patientProRelations.patientId, patients.id)
+        )
+        .where(
+          and(
+            eq(patientProRelations.proId, userId),
+            searchQuery
+              ? sql`(patients.first_name ILIKE ${searchQuery} OR patients.last_name ILIKE ${searchQuery})`
+              : sql`1=1`
+          )
+        )
+        .limit(limit)
+        .offset(offset);
+
+      return c.json(
+        toPaginatedResponse({
+          items: patientList,
+          totalCount: Number(totalPatients),
+          page,
+          limit,
+        })
+      );
     }
-
-    // Get the total count of patients
-    const totalPatients = await db
-      .select({ count: sql`COUNT(*)` })
-      .from(patientProRelations)
-      .where(eq(patientProRelations.proId, userId))
-      .then((result) => result[0]?.count || 0);
-
-    // Get the paginated list of patients
-    const patientList = await db
-      .select({
-        id: patients.id,
-        firstName: patients.firstName,
-        lastName: patients.lastName,
-        birthDate: patients.birthDate,
-      })
-      .from(patients)
-      .leftJoin(
-        patientProRelations,
-        eq(patientProRelations.patientId, patients.id)
-      )
-      .where(eq(patientProRelations.proId, userId))
-      .limit(limit)
-      .offset(offset);
-
-    return c.json(
-      toPaginatedResponse({
-        items: patientList,
-        totalCount: Number(totalPatients),
-        page,
-        limit,
-      })
-    );
-  })
+  )
   .get("/:patientId", async (c) => {
     const user = c.get("user");
     const userId = user?.id;
@@ -105,10 +135,34 @@ const patientsRoutes = new Hono<HonoType>()
       return c.json({ error: "User ID is not defined" }, 400);
     }
 
-    const [patient] = await db.insert(patients).values(data).returning();
+    const [patient] = await db
+      .insert(patients)
+      .values({
+        ...data,
+        status: "created",
+      })
+      .returning();
     await db.insert(patientProRelations).values({
       patientId: patient.id,
       proId: userId,
+    });
+    const [pro] = await db.select().from(pros).where(eq(pros.id, userId));
+    const res = await db
+      .insert(invitations)
+      .values({
+        email: data.email,
+        invitedBy: c.get("user")?.id,
+        role: "user",
+      })
+      .returning();
+    const token = res[0].token;
+    await sendMail({
+      to: data.email,
+      ...mailTemplate.proInvitePatientEmail({
+        email: data.email,
+        token,
+        proName: `${pro.firstName} ${pro.lastName}`,
+      }),
     });
     return c.json(patient);
   })

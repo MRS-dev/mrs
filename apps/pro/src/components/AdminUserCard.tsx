@@ -9,17 +9,17 @@ interface AdminUserCardProps {
   firstName: string;
   lastName: string;
   email?: string;
+  avatar?: string;
 }
 export const AdminUserCard = ({
   id,
   firstName,
   lastName,
-  email,
   avatar,
 }: AdminUserCardProps) => {
   return (
     <Link
-      href={ROUTES.admin(id)}
+      href={ROUTES.patientOverview(id)}
       className={cn(
         "col-span-1 bg-background rounded-xl border shadow-sm p-4 flex flex-col items-start gap-2 hover:shadow-md cursor-pointer h-full"
       )}
@@ -29,7 +29,7 @@ export const AdminUserCard = ({
           className="h-12 w-12 bg-primary/10"
           displayName={`${firstName} ${lastName}`}
           size={48}
-          src={avatar}
+          src={avatar || ""}
           alt={`${firstName} ${lastName}`}
         />
         <div className="flex flex-col flex-1 space-y-1 overflow-hidden">

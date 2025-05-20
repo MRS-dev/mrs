@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/queries/user/useUser";
 
 const accountInformationsSchema = z.object({
   name: z.string().min(1),
@@ -22,8 +23,16 @@ const accountInformationsSchema = z.object({
 });
 type AccountInformationFormInputs = z.infer<typeof accountInformationsSchema>;
 const AccountInformationForm: React.FC = () => {
+  const user = useUser();
   const form = useForm<AccountInformationFormInputs>({
     resolver: zodResolver(accountInformationsSchema),
+    defaultValues: {
+      name: user?.data?.data?.user.name,
+      email: user?.data?.data?.user.email,
+      phone: "",
+      address: "",
+      city: "",
+    },
   });
   const onSubmit = (data: AccountInformationFormInputs) => {
     console.log(data);

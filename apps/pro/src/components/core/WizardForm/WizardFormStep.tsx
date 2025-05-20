@@ -1,5 +1,10 @@
 import { ReactNode, useEffect } from "react";
-import { useForm, UseFormReturn, FieldValues } from "react-hook-form";
+import {
+  useForm,
+  UseFormReturn,
+  FieldValues,
+  DefaultValues,
+} from "react-hook-form";
 import { z } from "zod";
 import { useWizardFormStepContext } from "./WizardFormStepContext";
 import { cn } from "@/lib/utils";
@@ -41,14 +46,13 @@ export const WizardFormStep = <T extends FieldValues>({
   // On indique à useForm que le type est SchemaType (qui lui-même étend FieldValues)
   const form = useForm<z.infer<typeof zodSchema>>({
     resolver: zodResolver(zodSchema),
-    defaultValues: {
-      ...stepsData[index],
-    },
+    defaultValues: stepsData[index] as DefaultValues<T>,
   });
   useEffect(() => {
     if (Object.keys(form.formState.errors).length > 0) {
       setStepStatus("error", index);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.formState.errors]);
 
   //   const onSubmit = (data: z.infer<typeof zodSchema>) => {

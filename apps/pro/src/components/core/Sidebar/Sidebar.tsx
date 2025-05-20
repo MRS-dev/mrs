@@ -35,6 +35,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/queries/user/useUser";
 import { useSignOut } from "@/queries/auth/useSignOut";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
+import Image from "next/image";
 const SIDEBAR_MAX_WIDTH = "max-w-72";
 const SidebarHeader = () => {
   const { isOpen } = useSidebarStore();
@@ -46,7 +47,13 @@ const SidebarHeader = () => {
       )}
     >
       <div className="w-12 h-12 min-w-12 flex items-center justify-center">
-        <img src="/logo.png" alt="logo" className="w-10 h-10 min-w-10" />
+        <Image
+          src="/logo.png"
+          alt="logo"
+          className="w-10 h-10 min-w-10"
+          width={40}
+          height={40}
+        />
       </div>
       <div
         className={cn(
@@ -109,7 +116,11 @@ const SidebarLink = ({ to, Icon, label }: SidebarLinkProps) => {
 };
 const SidebarContent = () => {
   const { isOpen } = useSidebarStore();
-  const [ad, setAd] = useState(null as any);
+  const [ad, setAd] = useState<null | {
+    _id: string;
+    photoUrl: string;
+    url: string;
+  }>(null);
 
   const adQuery = useQuery({
     queryKey: ["ad-enable"],
@@ -136,8 +147,9 @@ const SidebarContent = () => {
     }
   };
 
-  const logAdEvent = (type: "view" | "click", adId: any) => {
+  const logAdEvent = (type: "view" | "click", adId: string) => {
     // createAdEvent({ type, adId });
+    console.log("logAdEvent", type, adId);
   };
 
   return (
@@ -291,7 +303,7 @@ const SidebarFooter = () => {
 };
 
 function Sidebar() {
-  const { isOpen, toggle } = useSidebarStore();
+  const { isOpen } = useSidebarStore();
   return (
     <div
       className={cn(

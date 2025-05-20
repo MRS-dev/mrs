@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { client } from "@/lib/apiClient";
 import { queryKeys } from "../queryKeys";
 
@@ -9,7 +9,7 @@ export const useWorkoutTemplates = ({
   page?: number;
   limit?: number;
 }) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.workoutTemplates({ page, limit }),
     queryFn: async () => {
       const response = await client.api["workout-templates"].$get({
@@ -23,5 +23,9 @@ export const useWorkoutTemplates = ({
       }
       return response.json();
     },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.pageInfo.hasNextPage ? pages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
   });
 };

@@ -48,6 +48,7 @@ export const InviteAdminModal = (props: ModalProps) => {
 
   useEffect(() => {
     form.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open]);
 
   const onSubmit = (data: InviteAdminModalInputs) => {

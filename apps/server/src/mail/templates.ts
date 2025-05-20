@@ -248,4 +248,67 @@ export const mailTemplate = {
     </html>`;
     return { subject, html };
   },
+  proInvitePatientEmail: ({
+    email,
+    token,
+    proName,
+  }: {
+    email: string;
+    token: string;
+    proName: string;
+  }) => {
+    const subject = "Invitation à rejoindre Ma Routine Santé";
+    const html = `<!DOCTYPE html>
+    <html>
+    <head>
+      <style> 
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        } 
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          color: #333;
+        }
+        .content {
+          text-align: left;
+          color: #333;
+          font-size: 16px;
+        } 
+        .footer {
+          text-align: center;
+          margin-top: 20px;
+          color: #888;
+          font-size: 14px;
+        } 
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Bienvenue et merci pour votre demande !</h1>  
+        </div>
+        <div class="content">
+          <p>Bonjour,</p>
+          <p>${proName} vous a invité à rejoindre Ma Routine Santé. Pour valider la création de votre compte, veuillez cliquer sur le lien ci-dessous :</p>
+          <a href="${process.env.PRO_FRONTEND_URL}/auth/invitation?token=${token}">Finaliser votre inscription</a>
+        </div>
+      </div>
+    </body>
+    </html>`;
+    return { subject, html };
+  },
 };

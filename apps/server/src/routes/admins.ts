@@ -4,11 +4,14 @@ import { roles } from "../lib/roles";
 import { db } from "../lib/db";
 import { zValidator } from "@hono/zod-validator";
 import { user } from "../schemas/auth";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { invitations } from "../schemas/invitations";
 import { z } from "zod";
 import { mailTemplate } from "../mail/templates";
 import { sendMail } from "../mail/mailer";
+import { toPaginatedResponse } from "../lib/utils/paginations";
+import { getQueryPagination, paginationSchema } from "../lib/utils/paginations";
+import { patients } from "../schemas/patients";
 
 const adminsRoutes = new Hono<HonoType>()
   .basePath("/admins")
@@ -108,6 +111,44 @@ const adminsRoutes = new Hono<HonoType>()
         body: { email, password, name, role: "admin" },
       });
       return c.json(admin);
+    }
+  )
+  .get(
+    "/patients",
+    roles("admin"),
+    zValidator("query", paginationSchema),
+    async (c) => {
+      const user = c.get("user");
+      const userId = user?.id;
+      const { page, limit, offset } = getQueryPagination(c.req.valid("query"));
+
+      if (!userId) {
+        return c.json({ error: "User ID is not defined" }, 400);
+      }
+      const totalPatients = await db
+        .select({ count: sql`COUNT(*)` })
+        .from(patients);
+      const patientList = await db
+        .select({
+          id: patients.id,
+          firstName: patients.firstName,
+          lastName: patients.lastName,
+          email: patients.email,
+          status: patients.status,
+          birthDate: patients.birthDate,
+        })
+        .from(patients)
+        .limit(limit)
+        .offset(offset);
+
+      return c.json(
+        toPaginatedResponse({
+          items: patientList,
+          totalCount: Number(totalPatients),
+          page,
+          limit,
+        })
+      );
     }
   );
 

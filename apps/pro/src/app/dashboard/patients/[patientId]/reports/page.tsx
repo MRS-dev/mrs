@@ -39,20 +39,22 @@ export default function PatientReports() {
 
   const sessionsByDate = useMemo(() => {
     const newSessionsByDate: SessionScheduledByDate[] = [];
-    workoutSessionsQuery?.data?.items.forEach((session) => {
-      const dateIsAlreadyInSessionsByDate = newSessionsByDate.find(
-        (sessionByDate) => isSameDay(sessionByDate.date, session.date)
-      );
-      if (dateIsAlreadyInSessionsByDate) {
-        dateIsAlreadyInSessionsByDate.sessions.push(session);
-      } else {
-        newSessionsByDate.push({
-          key: startOfDay(session.date).toISOString(),
-          date: new Date(session.date),
-          sessions: [session],
-        });
-      }
-    });
+    workoutSessionsQuery?.data?.pages
+      .flatMap((page) => page.items)
+      .forEach((session) => {
+        const dateIsAlreadyInSessionsByDate = newSessionsByDate.find(
+          (sessionByDate) => isSameDay(sessionByDate.date, session.date)
+        );
+        if (dateIsAlreadyInSessionsByDate) {
+          dateIsAlreadyInSessionsByDate.sessions.push(session);
+        } else {
+          newSessionsByDate.push({
+            key: startOfDay(session.date).toISOString(),
+            date: new Date(session.date),
+            sessions: [session],
+          });
+        }
+      });
     return newSessionsByDate;
   }, [workoutSessionsQuery.data]);
 

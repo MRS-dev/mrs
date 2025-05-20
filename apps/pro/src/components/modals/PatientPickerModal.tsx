@@ -8,6 +8,7 @@ import { PickerModal } from "./PickerModal";
 import { usePatients } from "@/queries/patients/usePatients";
 import { usePatient } from "@/queries/patients/usePatient";
 import { MrsAvatar } from "../mrs/MrsAvatar";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface PatientPickerProps {
   value: string; // L'ID du patient sélectionné
@@ -22,11 +23,10 @@ export default function PatientPicker({
 }: PatientPickerProps) {
   // Recherche dans le modal
   const [search, setSearch] = useState("");
-  // const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 500);
 
-  const patientsQuery = usePatients();
+  const patientsQuery = usePatients({ search: debouncedSearch });
   const patientQuery = usePatient(value);
-  console.log("patientQuery", patientQuery);
   return (
     <PickerModal
       className={className}
@@ -84,11 +84,11 @@ export default function PatientPicker({
       keyExtractor={(item) => item.id}
       search={search}
       onSearch={setSearch}
-      items={patientsQuery.data?.items || []}
-      resultsCount={patientsQuery.data?.pageInfo?.totalCount}
-      totalCount={patientsQuery.data?.pageInfo?.totalCount}
+      items={patientsQuery.data?.pages.flatMap((page) => page.items) || []}
+      resultsCount={patientsQuery.data?.pages[0]?.pageInfo.totalCount}
+      totalCount={patientsQuery.data?.pages[0]?.pageInfo.totalCount}
       isLoading={patientsQuery.isLoading}
-      hasMore={!!patientsQuery.data?.pageInfo?.hasNextPage}
+      hasMore={!!patientsQuery.data?.pages[0].pageInfo?.hasNextPage}
       onLoadMore={() => {
         patientsQuery.refetch();
       }}

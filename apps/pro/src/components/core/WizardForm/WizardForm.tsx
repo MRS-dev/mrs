@@ -113,6 +113,7 @@ export const WizardForm = <
       return { ...acc, ...stepObj };
     }, {});
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const data = useMemo(() => mergeStepsData(), [stepsData]);
 
   const prevStep = () => {

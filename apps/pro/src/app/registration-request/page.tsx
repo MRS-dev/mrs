@@ -17,17 +17,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import MrsFileUploadArea from "@/components/mrs/MrsFileUpload";
 import { useCreateRegistrationRequest } from "@/queries/registrationRequest/useCreateRegisrtationRequest";
-
-export function isValidLuhn(number: string): boolean {
-  let sum = 0;
-  for (let i = 0; i < number.length; i++) {
-    let num = parseInt(number[i], 10);
-    if (i % 2 === number.length % 2) num *= 2; // Double les chiffres en position paire (en comptant depuis la droite)
-    if (num > 9) num -= 9; // Soustrait 9 si le résultat est supérieur à 9
-    sum += num;
-  }
-  return sum % 10 === 0;
-}
+import Image from "next/image";
 
 const registrationRequestSchema = z.object({
   firstName: z.string().min(1, "Le prénom est requis"),
@@ -83,6 +73,8 @@ const RegistrationRequest: React.FC = () => {
       firstName: "",
       lastName: "",
       email: "",
+      siret: "",
+      rpps: "",
       phoneNumber: "",
       companyName: "",
     },
@@ -103,7 +95,13 @@ const RegistrationRequest: React.FC = () => {
             className={cn("h-10 w-full flex items-center justify-center")}
           >
             <div className="w-12 h-10 min-w-12 flex items-center justify-center">
-              <img src="/logo.png" alt="logo" className="w-10 h-10 min-w-10" />
+              <Image
+                src="/logo.png"
+                alt="logo"
+                className="w-10 h-10 min-w-10"
+                width={40}
+                height={40}
+              />
             </div>
             <div className="max-w-flex flex-1 transition-all duration-300 text-foreground font-bold text-base">
               <span className="text-lg truncate">Ma Routine Santé</span>

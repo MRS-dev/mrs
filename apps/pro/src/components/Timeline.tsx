@@ -1,6 +1,6 @@
 "use client";
 interface TimelineDateProps {
-  title: unknown;
+  title: React.ReactNode;
   components?: {
     Header?: React.ReactNode;
   };

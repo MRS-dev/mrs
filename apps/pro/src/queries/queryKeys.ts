@@ -1,8 +1,11 @@
 export const queryKeys = {
   user: ["user"],
-  patients: ["patients"],
+  patients: (params?: { search?: string }) => ["patients", params],
   patient: (patientId: string) => ["patient", patientId],
-  exercises: (params: { page: number; limit: number }) => ["exercises", params],
+  exercises: (params?: { page: number; limit: number }) => [
+    "exercises",
+    params || {},
+  ],
   exercise: (exerciseId: string) => ["exercise", exerciseId],
   activities: (params: { page: number; limit: number }) => [
     "activities",

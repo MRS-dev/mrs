@@ -19,6 +19,7 @@ export default function DashboardLayout({
     if (!currentUser && !user.isPending) {
       router.push(ROUTES.login);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
   if (user?.isPending) {
     return <div>Loading...</div>;

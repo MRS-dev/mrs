@@ -3,7 +3,6 @@ import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { Sidebar as SidebarIcon } from "lucide-react";
 import useSidebarStore from "./Sidebar/Sidebar.store";
-import { useRouter } from "next/navigation";
 interface SidebarLayoutProps {
   Header?: React.ReactNode;
   Footer?: React.ReactNode;
@@ -14,9 +13,8 @@ const SidebarLayoutHeader = ({
   Footer,
   children,
 }: SidebarLayoutProps) => {
-  const { isOpen, toggle } = useSidebarStore();
+  const { toggle } = useSidebarStore();
   // const { toast } = useToast();
-  const router = useRouter();
   // const { notifications, markAsRead, addNotification } = useNotificationContext();
   // const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
 

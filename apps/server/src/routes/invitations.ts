@@ -8,6 +8,8 @@ import { eq, and } from "drizzle-orm";
 import type { Roles } from "../lib/permissions";
 import { registrationRequests } from "../schemas/registrationRequests";
 import { chats } from "../schemas/chats";
+import { pros } from "../schemas/pros";
+import { patients } from "../schemas/patients";
 
 const invitationsRoutes = new Hono<HonoType>()
   .basePath("/invitations")
@@ -146,8 +148,73 @@ const invitationsRoutes = new Hono<HonoType>()
           title: `Support - ${firstName} ${lastName}`,
         })
         .returning();
+      await db.insert(pros).values({
+        id: user.id,
+        firstName: registrationRequest.firstName,
+        lastName: registrationRequest.lastName,
+        email: registrationRequest.email,
+        phoneNumber: registrationRequest.phoneNumber,
+      });
+
+      return c.json(user);
+    }
+  )
+  .post(
+    "/patient/accept",
+    zValidator(
+      "json",
+      z.object({
+        token: z.string(),
+        password: z.string().min(8),
+        email: z.string().email(),
+      })
+    ),
+    async (c) => {
+      const { token, password, email } = c.req.valid("json");
+
+      const [invitation] = await db
+        .select()
+        .from(invitations)
+        .where(and(eq(invitations.email, email), eq(invitations.token, token)));
+
+      if (!invitation) {
+        return c.json({ error: "Invitation not found" }, 404);
+      }
+
+      if (invitation.acceptedAt) {
+        return c.json({ error: "Invitation already accepted" }, 400);
+      }
+
+      if (invitation.token !== token) {
+        return c.json({ error: "Invalid token" }, 401);
+      }
+
+      if (email !== invitation.email) {
+        return c.json({ error: "Wrong email" }, 401);
+      }
+      const [patient] = await db
+        .select()
+        .from(patients)
+        .where(eq(patients.email, email));
+
+      const { user } = await auth.api.createUser({
+        body: {
+          email,
+          password,
+          role: "user" as Roles,
+          name: patient.firstName,
+          data: {
+            lastName: patient.lastName,
+          },
+        },
+      });
+
+      await db
+        .update(invitations)
+        .set({ acceptedAt: new Date() })
+        .where(eq(invitations.email, email));
+
       return c.json(user);
     }
   );
-
 export default invitationsRoutes;

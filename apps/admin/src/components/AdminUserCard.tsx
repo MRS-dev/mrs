@@ -9,12 +9,12 @@ interface AdminUserCardProps {
   firstName: string;
   lastName: string;
   email?: string;
+  avatar?: string;
 }
 export const AdminUserCard = ({
   id,
   firstName,
   lastName,
-  email,
   avatar,
 }: AdminUserCardProps) => {
   return (
@@ -29,7 +29,7 @@ export const AdminUserCard = ({
           className="h-12 w-12 bg-primary/10"
           displayName={`${firstName} ${lastName}`}
           size={48}
-          src={avatar}
+          src={avatar || ""}
           alt={`${firstName} ${lastName}`}
         />
         <div className="flex flex-col flex-1 space-y-1 overflow-hidden">

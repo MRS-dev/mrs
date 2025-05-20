@@ -17,7 +17,6 @@ import {
   TvMinimalPlay,
 } from "lucide-react";
 import useSidebarStore from "./Sidebar.store";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -38,6 +37,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSignOut } from "@/queries/auth/useSignOut";
 import { useUser } from "@/queries/user/useUser";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
+import Image from "next/image";
 
 const SIDEBAR_MAX_WIDTH = "max-w-72";
 const SidebarHeader = () => {
@@ -50,10 +50,12 @@ const SidebarHeader = () => {
       )}
     >
       <div className="w-12 h-12 min-w-12 flex items-center justify-center">
-        <img
+        <Image
           src="/logo-monochrome.png"
           alt="logo"
           className="w-10 h-10 min-w-10"
+          width={40}
+          height={40}
         />
       </div>
       <div
@@ -120,7 +122,7 @@ const SidebarContent = () => {
   return (
     <div className="flex flex-col  flex-1 justify-start pt-3 overflow-y-auto">
       <SidebarLink to={ROUTES.admins} Icon={<Shield />} label="Admins" />
-      <SidebarLink to={ROUTES.doctors} Icon={<Users />} label="Kiné" />
+      <SidebarLink to={ROUTES.pros} Icon={<Users />} label="Kinés" />
       <SidebarLink
         to={ROUTES.registrationRequests}
         Icon={<UserPlus />}
@@ -247,7 +249,7 @@ const SidebarFooter = () => {
 };
 
 function Sidebar() {
-  const { isOpen, toggle } = useSidebarStore();
+  const { isOpen } = useSidebarStore();
   return (
     <div
       className={cn(

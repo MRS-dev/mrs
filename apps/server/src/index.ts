@@ -3,9 +3,8 @@ import "dotenv/config"; // Charge les variables depuis .env dans process.env
 
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { auth, type HonoType } from "./lib/auth";
+import { type HonoType } from "./lib/auth";
 import authRoutes from "./routes/auth";
-import testRoutes from "./routes/test";
 import { cors } from "hono/cors";
 import adminRoutes from "./routes/admins";
 import invitationsRoutes from "./routes/invitations";
@@ -17,8 +16,37 @@ import workoutTemplatesRoutes from "./routes/workoutTemplates";
 import workoutSessionsRoutes from "./routes/workoutSession";
 import messagesRoutes from "./routes/messages";
 import chatsRoutes from "./routes/chats";
+import adminExercisesRoutes from "./routes/adminExercises";
+import adminProsRoutes from "./routes/adminPros";
+import adminActivitiesRoutes from "./routes/adminActivities";
 // Exemple de route RPC
-const app = new Hono<HonoType>()
+const app = new Hono<HonoType>({
+  // getPath: (req) => {
+  //   const url = new URL(req.url);
+  //   const port = url.port; // ex. "3001" ou "3002"
+  //   let prefix = "";
+  //   if (port === "3001") {
+  //     prefix = "/admin";
+  //   } else if (port === "3002") {
+  //     prefix = "/pro";
+  //   }
+  //   // Log détaillé de l'URL
+  //   console.log("Détails de l'URL :");
+  //   console.log("- URL complète:", url.href);
+  //   console.log("- Protocole:", url.protocol);
+  //   console.log("- Host:", url.host);
+  //   console.log("- Hostname:", url.hostname);
+  //   console.log("- Port:", url.port);
+  //   console.log("- Pathname:", url.pathname);
+  //   console.log("- Search:", url.search);
+  //   console.log("- Hash:", url.hash);
+  //   console.log("- Origin:", url.origin);
+  //   // reconstructed pathname: e.g. "/admin/test"
+  //   const test = `${prefix}${url.pathname}`;
+  //   console.log("Chemin reconstruit:", test);
+  //   return test;
+  // },
+})
   .use(
     "/api/*",
     cors({
@@ -30,7 +58,6 @@ const app = new Hono<HonoType>()
   )
   .basePath("/api")
   .route("/", authRoutes)
-  .route("/", testRoutes)
   .route("/", adminRoutes)
   .route("/", invitationsRoutes)
   .route("/", registrationRequestRoutes)
@@ -40,7 +67,10 @@ const app = new Hono<HonoType>()
   .route("/", workoutTemplatesRoutes)
   .route("/", workoutSessionsRoutes)
   .route("/", messagesRoutes)
-  .route("/", chatsRoutes);
+  .route("/", chatsRoutes)
+  .route("/", adminExercisesRoutes)
+  .route("/", adminProsRoutes)
+  .route("/", adminActivitiesRoutes);
 
 export type AppType = typeof app;
 

@@ -213,7 +213,7 @@ export const MrsBirthdayPicker = ({
               Année
             </div>
             <ScrollArea className="h-64 overflow-auto px-2 scroll-smooth">
-              {years.map((y, index) => (
+              {years.map((y) => (
                 <DropdownMenuItem
                   key={y}
                   className={cn(

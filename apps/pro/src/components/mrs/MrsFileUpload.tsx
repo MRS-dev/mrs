@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { Trash2, Upload } from "lucide-react";
-
+import Image from "next/image";
 interface MrsFileUploadAreaProps {
   accept: string; // Types de fichiers acceptés, ex : "image/*"
   maxFiles?: number; // Nombre maximum de fichiers
@@ -159,7 +159,7 @@ const MrsFileUploadArea: React.FC<MrsFileUploadAreaProps> = ({
               >
                 <Trash2 className="size-4 text-red-500" />
               </button>
-              <img
+              <Image
                 src={file.src}
                 alt={`preview-${index}`}
                 className="h-20 w-20 object-contain rounded-xl"

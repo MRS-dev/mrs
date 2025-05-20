@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
-import { useEnable2fa } from "@/queries/2fma/useEnable2fa";
 import InputPassword from "@/components/mrs/MrsInputPassword";
+import { useEnable2fa } from "@/queries/2fa/useEnable2fa";
 
 const MfaSetupPage: React.FC = () => {
   const router = useRouter();

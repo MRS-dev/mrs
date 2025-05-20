@@ -37,11 +37,17 @@ export default function PatientWorkoutSessions() {
     [patientId]
   );
   const workoutSessionsQuery = useWorkoutSessions(filter);
+  const { data } = workoutSessionsQuery;
+  const workoutSessions = useMemo(
+    () => data?.pages.flatMap((page) => page.items) || [],
+    [data]
+  );
+
   const { data: patient } = usePatient(patientId);
 
   const sessionsByDate = useMemo(() => {
     const newSessionsByDate: SessionScheduledByDate[] = [];
-    workoutSessionsQuery?.data?.items.forEach((session) => {
+    workoutSessions.forEach((session) => {
       const dateIsAlreadyInSessionsByDate = newSessionsByDate.find(
         (sessionByDate) => isSameDay(sessionByDate.date, session.date)
       );
@@ -56,7 +62,7 @@ export default function PatientWorkoutSessions() {
       }
     });
     return newSessionsByDate;
-  }, [workoutSessionsQuery.data]);
+  }, [workoutSessions]);
 
   const handleSelectSession = (sessionId: string) => {
     setSelectedSessions((prev) =>
@@ -65,28 +71,9 @@ export default function PatientWorkoutSessions() {
         : [...prev, sessionId]
     );
   };
-  const removeSessionsFromCache = (ids: string[]) => {
-    // return queryClient.setQueriesData(
-    //   { queryKey: sessionQueryKey },
-    //   (oldData: typeof sessionsQuery.data) => {
-    //     return {
-    //       ...oldData,
-    //       pages:
-    //         oldData?.pages?.map((page) => {
-    //           return {
-    //             ...page,
-    //             data: page?.data?.filter((session: WithId<ISession>) => {
-    //               return !ids.includes(session._id);
-    //             }),
-    //           };
-    //         }) || [],
-    //     };
-    //   }
-    // );
-  };
   const deleteWorkOutSession = useDeleteWorkoutSessions({
     onSuccess: () => {
-      removeSessionsFromCache(selectedSessions);
+      // removeSessionsFromCache(selectedSessions);
       setMode("default");
       confirmDeleteModal.onClose();
     },
@@ -99,6 +86,7 @@ export default function PatientWorkoutSessions() {
     if (mode === "default" && !!selectedSessions?.length) {
       setSelectedSessions([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
   return (
@@ -150,9 +138,9 @@ export default function PatientWorkoutSessions() {
                       workoutSessionId={session.id as string}
                       key={(session.id as string) || index}
                       mode={mode}
-                      onDeleteSuccess={() =>
-                        removeSessionsFromCache([session.id as string])
-                      }
+                      // onDeleteSuccess={() =>
+                      //   removeSessionsFromCache([session.id as string])
+                      // }
                       onSelect={() => handleSelectSession(session.id as string)}
                       onClick={() => {}}
                       selected={selectedSessions.includes(session.id as string)}

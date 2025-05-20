@@ -32,10 +32,14 @@ export const workoutSessions = pgTable("workout_sessions", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   patientId: uuid("patient_id")
     .notNull()
-    .references(() => patients.id),
+    .references(() => patients.id, {
+      onDelete: "cascade",
+    }),
   proId: uuid("pro_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, {
+      onDelete: "set null",
+    }),
   date: timestamp("date").notNull(),
   status: text("status", {
     enum: ["created", "started", "paused", "completed", "cancelled"],

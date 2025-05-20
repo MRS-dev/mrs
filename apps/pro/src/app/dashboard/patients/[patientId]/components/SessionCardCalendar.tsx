@@ -22,7 +22,9 @@ function SessionCalendarCard() {
     limit: "1000",
     page: "1",
   });
-  const allSessions = sessionsQuery.data?.items || [];
+
+  const allSessions =
+    sessionsQuery.data?.pages?.flatMap((page) => page.items) || [];
   const getSessionStatus = (sessionId: string) => {
     const session = allSessions.find((session) => session.id === sessionId);
     if (!session) return "pending";

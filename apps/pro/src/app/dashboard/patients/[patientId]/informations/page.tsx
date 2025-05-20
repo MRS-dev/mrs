@@ -59,14 +59,10 @@ const PatientProgram: React.FC = () => {
         allergies: patient.allergies || "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patient]);
 
   // const updatePatientMutation = useUpdatePatient(patientId);
-
-  const onSubmit = (data: PatientInformationsFormInputs) => {
-    console.log(data);
-    // Gérer la logique d'inscription ici
-  };
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 text-foreground">

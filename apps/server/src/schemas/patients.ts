@@ -31,7 +31,7 @@ export const patients = pgTable("patients", {
   userId: uuid("user_id").references(() => user.id),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
   birthDate: timestamp("birth_date").notNull(),
   phoneNumber: text("phone_number"),
   socialSecurityNumber: text("social_security_number").notNull(),

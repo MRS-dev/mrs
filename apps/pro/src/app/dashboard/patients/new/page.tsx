@@ -76,10 +76,9 @@ const EmergencyContactSchema = z.object({
     })
     .optional(),
 });
-
-export const createPatientSchema = PersonalInfoSchema.merge(
-  AddressSchema
-).merge(EmergencyContactSchema);
+const createPatientSchema = PersonalInfoSchema.merge(AddressSchema).merge(
+  EmergencyContactSchema
+);
 
 export type CreatePatientSchema = z.infer<typeof createPatientSchema>;
 

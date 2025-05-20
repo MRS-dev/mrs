@@ -15,18 +15,27 @@ import { Input } from "@/components/ui/input";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { ROUTES } from "@/routes";
 import Link from "next/link";
-import { MrsQuery } from "@/components/mrs/MrsQuery";
 import { formatTime } from "@/lib/date";
 import { useWorkoutTemplates } from "@/queries/workoutTemplates/useWorkoutTemplates";
 import { useExercise } from "@/queries/exercises/useExercise";
+import GridLayout from "@/components/mrs/GridLayout";
 
 const ITEMS_PER_PAGE = 10;
 const ProgramTemplates: React.FC = () => {
-  const workoutTemplates = useWorkoutTemplates({
+  const workoutTemplatesQuery = useWorkoutTemplates({
     page: 1,
     limit: ITEMS_PER_PAGE,
   });
 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = workoutTemplatesQuery;
+  const workoutTemplates = data?.pages.flatMap((page) => page.items) || [];
   return (
     <SidebarLayout
       Header={
@@ -35,8 +44,8 @@ const ProgramTemplates: React.FC = () => {
             <h1 className="text-2xl font-bold">
               Modèles de programme
               <span className="text-muted-foreground font-medium text-2xl ml-2">
-                ({workoutTemplates.data?.items.length}/
-                {workoutTemplates.data?.pageInfo.totalCount})
+                ({workoutTemplates?.length}/
+                {workoutTemplatesQuery.data?.pages[0].pageInfo.totalCount})
               </span>
             </h1>
             <div className="flex flex-row items-center space-x-3">
@@ -79,77 +88,62 @@ const ProgramTemplates: React.FC = () => {
                 </div>
               </div> */}
       <div className="flex flex-1 flex-col gap-4 text-foreground  p-6 xl:max-w-screen-lg lg:max-w-screen-md md:max-w-screen-sm mx-auto w-full">
-        <MrsQuery
-          query={workoutTemplates}
-          Data={
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {workoutTemplates.data?.items.map((workoutTemplate) => (
-                <Link
-                  href={ROUTES.workoutTemplate(workoutTemplate.id as string)}
-                  key={workoutTemplate.id}
-                  className="bg-background rounded-xl border shadow-sm flex flex-col items-start  hover:shadow-md cursor-pointer"
-                >
-                  <div className="h-11 flex flex-row items-center justify-between w-full p-4 pr-1">
-                    <h3 className="text-base font-semibold line-clamp-1 w-fulls">
-                      {workoutTemplate.name}
-                    </h3>
-                    <Button variant="ghost" size="icon">
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-col w-full border-t h-32 overflow-hidden bg-muted relative">
-                    {workoutTemplate.program?.exercises?.map((exercise) => (
-                      <WorkoutExerciseCard
-                        key={exercise.exerciseId}
-                        exerciseId={exercise.exerciseId}
-                        executionTime={exercise.executionTime}
-                        repetitions={exercise.repetitions}
-                        series={exercise.series}
-                        restTime={exercise.restTime}
-                      />
-                    ))}
-                    <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background to-transparent"></div>
-                  </div>
-                  <div className="flex flex-row items-center justify-between w-full px-4  py-2 ">
-                    <p className="text-xs text-muted-foreground">
-                      {workoutTemplate.program?.exercises?.length || 0}{" "}
-                      exercices
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Durée estimée{" "}
-                      {formatTime(
-                        workoutTemplate.program?.exercises?.reduce(
-                          (acc, exercise) =>
-                            acc +
-                            (exercise?.executionTime || 0) *
-                              (exercise?.series || 0),
-                          0
-                        ) || 0
-                      )}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          }
-          Empty={
-            <div className="flex flex-col items-center justify-center p-4 bg-primary/10 backdrop-blur-md rounded-xl text-primary min-h-44">
-              <h3 className="text-lg font-semibold m-0">
-                Aucun modèle de programme
-              </h3>
-              <p className="text-base">Créez un nouveau modèle de programme</p>
-              <Button
-                className="mt-4"
-                // onClick={pickExerciseModal.open}
-                asChild
-              >
-                <Link href={ROUTES.workoutTemplate("new")}>
-                  <Plus className="size-4" />
-                  Créer un modèle
-                </Link>
-              </Button>
-            </div>
-          }
+        <GridLayout
+          items={workoutTemplates || []}
+          renderGridItem={(workoutTemplate) => (
+            <Link
+              href={ROUTES.workoutTemplate(workoutTemplate.id as string)}
+              key={workoutTemplate.id}
+              className="bg-background rounded-xl border shadow-sm flex flex-col items-start  hover:shadow-md cursor-pointer"
+            >
+              <div className="h-11 flex flex-row items-center justify-between w-full p-4 pr-1">
+                <h3 className="text-base font-semibold line-clamp-1 w-fulls">
+                  {workoutTemplate.name}
+                </h3>
+                <Button variant="ghost" size="icon">
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex flex-col w-full border-t h-32 overflow-hidden bg-muted relative">
+                {workoutTemplate.program?.exercises?.map((exercise) => (
+                  <WorkoutExerciseCard
+                    key={exercise.exerciseId}
+                    exerciseId={exercise.exerciseId}
+                    executionTime={exercise.executionTime}
+                    repetitions={exercise.repetitions}
+                    series={exercise.series}
+                    restTime={exercise.restTime}
+                  />
+                ))}
+                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background to-transparent"></div>
+              </div>
+              <div className="flex flex-row items-center justify-between w-full px-4  py-2 ">
+                <p className="text-xs text-muted-foreground">
+                  {workoutTemplate?.program?.exercises?.length || 0} exercices
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Durée estimée{" "}
+                  {formatTime(
+                    workoutTemplate.program?.exercises?.reduce(
+                      (acc, exercise) =>
+                        acc +
+                        (exercise?.executionTime || 0) *
+                          (exercise?.series || 0),
+                      0
+                    ) || 0
+                  )}
+                </p>
+              </div>
+            </Link>
+          )}
+          keyExtractor={(patient) => patient?.id.toString()}
+          isLoading={isLoading}
+          error={error?.message}
+          hasMore={hasNextPage}
+          emptyMessage="Aucun patient trouvé"
+          isLoadingMore={isFetchingNextPage}
+          onLoadMore={fetchNextPage}
+          skeletonCount={ITEMS_PER_PAGE}
         />
       </div>
     </SidebarLayout>

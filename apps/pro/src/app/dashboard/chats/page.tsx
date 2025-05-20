@@ -23,15 +23,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
 
 type MessageFormInputs = z.infer<typeof messageSchema>;
-
-export const chatSchema = z.object({
-  title: z.string().min(1, { message: "Le titre est requis." }).optional(),
-  participants: z
-    .array(z.string().min(1, { message: "Un participant est requis." }))
-    .nonempty({
-      message: "La liste des participants doit contenir au moins une personne.",
-    }),
-});
 const messageSchema = z.object({
   content: z.string().min(1, { message: "Le message ne peut pas être vide." }),
 });

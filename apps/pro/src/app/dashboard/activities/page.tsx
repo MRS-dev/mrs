@@ -10,7 +10,7 @@ import { useActivities } from "@/queries/activities/useActivities";
 const Activities: React.FC = () => {
   const exercisesQuery = useActivities({
     page: 1,
-    limit: 10,
+    limit: 100,
   });
 
   return (

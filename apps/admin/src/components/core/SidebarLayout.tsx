@@ -1,5 +1,4 @@
 "use client";
-import useSidebarStore from "./Sidebar/Sidebar.store";
 import Sidebar from "./Sidebar/Sidebar";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +14,6 @@ const SidebarLayout = ({
   scrollable = true,
   className,
 }: SidebarLayoutProps) => {
-  const { isOpen, toggle } = useSidebarStore();
   return (
     <div
       className={cn(

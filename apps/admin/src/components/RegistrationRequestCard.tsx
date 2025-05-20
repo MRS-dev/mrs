@@ -1,6 +1,4 @@
-import { Calendar, LoaderCircle, Mail, Phone } from "lucide-react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { Calendar, Mail, Phone } from "lucide-react";
 
 interface RegistrationRequestCardProps {
   id: string;
