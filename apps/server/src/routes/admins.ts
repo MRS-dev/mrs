@@ -150,6 +150,6 @@ const adminsRoutes = new Hono<HonoType>()
         })
       );
     }
-  );
+  )
 
 export default adminsRoutes;
