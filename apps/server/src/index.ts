@@ -21,7 +21,7 @@ import adminProsRoutes from "./routes/adminPros";
 import adminActivitiesRoutes from "./routes/adminActivities";
 import { handle } from "hono/vercel";
 
-// Spécifiez 'edge' pour le runtime Edge de Vercel (recommandé)
+// Spécifiez 'edge' pour le runtime Edge de Vercel (recommandé
 // Ou 'nodejs' si vous préférez/devez utiliser Node.js
 export const runtime = "edge";
 
