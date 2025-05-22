@@ -4,10 +4,8 @@
     "module": "ES2022",
     "moduleResolution": "bundler",
     "baseUrl": ".",
-
     "outDir": "./dist",
     "rootDir": ".",
-
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
