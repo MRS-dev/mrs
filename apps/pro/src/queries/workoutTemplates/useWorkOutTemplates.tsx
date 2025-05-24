@@ -4,7 +4,7 @@ import { queryKeys } from "../queryKeys";
 
 export const useWorkoutTemplates = ({
   page = 1,
-  limit = 10,
+  limit = 100,
 }: {
   page?: number;
   limit?: number;
