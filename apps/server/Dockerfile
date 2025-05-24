@@ -1,8 +1,7 @@
-FROM node:18-slim
+FROM node:20.10.0-alpine AS base
 
-# Installer netcat et pnpm
-RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/* && \
-  npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
+RUN apk add --no-cache netcat-openbsd
 
 WORKDIR /app
 

@@ -16,7 +16,7 @@ services:
       - .:/app # code monorepo
       - server_node_modules:/app/node_modules # volume nommé pour node_modules
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "3000" ]
+      test: [ "CMD", "nc", "-z", "0.0.0.0", "3000" ]
       interval: 10s
       timeout: 5s
       retries: 3
