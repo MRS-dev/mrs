@@ -16,7 +16,7 @@ import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { ROUTES } from "@/routes";
 import Link from "next/link";
 import { formatTime } from "@/lib/date";
-import { useExercise } from "../../../queries/exercises/useExercise";
+import { useExercise } from "@/queries/exercises/useExercise";
 import GridLayout from "@/components/mrs/GridLayout";
 import { useWorkoutTemplates } from "@/queries/workoutTemplates/useWorkoutTemplates";
 
