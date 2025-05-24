@@ -6,7 +6,7 @@ import {
 import { AuthType } from "../../../server/src/lib/auth";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL!,
   basePath: "/api/auth", // ← ici
   plugins: [twoFactorClient(), inferAdditionalFields<AuthType>()],
 });

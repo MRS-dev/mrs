@@ -19,45 +19,17 @@ import chatsRoutes from "./routes/chats";
 import adminExercisesRoutes from "./routes/adminExercises";
 import adminProsRoutes from "./routes/adminPros";
 import adminActivitiesRoutes from "./routes/adminActivities";
-import { handle } from "hono/vercel";
-
-// Spécifiez 'edge' pour le runtime Edge de Vercel (recommandé
-// Ou 'nodejs' si vous préférez/devez utiliser Node.js
-export const runtime = "edge";
-
-const app = new Hono<HonoType>({
-  // getPath: (req) => {
-  //   const url = new URL(req.url);
-  //   const port = url.port; // ex. "3001" ou "3002"
-  //   let prefix = "";
-  //   if (port === "3001") {
-  //     prefix = "/admin";
-  //   } else if (port === "3002") {
-  //     prefix = "/pro";
-  //   }
-  //   // Log détaillé de l'URL
-  //   console.log("Détails de l'URL :");
-  //   console.log("- URL complète:", url.href);
-  //   console.log("- Protocole:", url.protocol);
-  //   console.log("- Host:", url.host);
-  //   console.log("- Hostname:", url.hostname);
-  //   console.log("- Port:", url.port);
-  //   console.log("- Pathname:", url.pathname);
-  //   console.log("- Search:", url.search);
-  //   console.log("- Hash:", url.hash);
-  //   console.log("- Origin:", url.origin);
-  //   // reconstructed pathname: e.g. "/admin/test"
-  //   const test = `${prefix}${url.pathname}`;
-  //   console.log("Chemin reconstruit:", test);
-  //   return test;
-  // },
-})
+console.log("origins", [
+  process.env.ADMIN_FRONTEND_URL!,
+  process.env.PRO_FRONTEND_URL!,
+]);
+const app = new Hono<HonoType>()
   .use(
     "/api/*",
     cors({
-      origin: ["http://localhost:3002", "http://localhost:3001"], // ou liste de domaines autorisés
-      allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"], // inclure OPTIONS
-      allowHeaders: ["Content-Type", "Authorization"], // selon tes besoins
+      origin: [process.env.ADMIN_FRONTEND_URL!, process.env.PRO_FRONTEND_URL!],
+      allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+      allowHeaders: ["Content-Type", "Authorization"],
       credentials: true,
     })
   )
@@ -75,35 +47,34 @@ const app = new Hono<HonoType>({
   .route("/", chatsRoutes)
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
-  .route("/", adminActivitiesRoutes);
+  .route("/", adminActivitiesRoutes)
+  .get("/health", (c) => c.text("OK"));
 
-app.get("/", (c) => {
-  return c.json({ message: "Hello from Hono on Vercel!" });
-});
+const port = process.env.PORT || 3000;
 
-app.get("/users", (c) => {
-  // Votre logique pour /api/users
-  return c.json([{ id: 1, name: "John Doe" }]);
-});
-
-export default handle(app); // Cette méthode est souvent utilisée avec des configurations plus simples de `vercel.json` où le fichier lui-même est la fonction.
-// Pour être sûr, vérifiez la documentation la plus récente de Hono pour le déploiement "standalone" sur Vercel Edge.
-
-// Si la méthode ci-dessus ne fonctionne pas comme prévu ou si vous voyez des erreurs
-// liées à la manière dont Vercel essaie d'invoquer votre fonction,
-// vous pourriez avoir besoin d'une structure de fichier qui ressemble plus à une Vercel Serverless Function.
-// Par exemple, si Vercel attend un export par défaut qui est une fonction (req, res), vous pourriez
-// avoir besoin d'adapter légèrement.
-// Cependant, avec `hono/vercel` et la bonne config `vercel.json`, ça devrait marcher.
+try {
+  serve(
+    {
+      fetch: app.fetch,
+      port: Number(port),
+      hostname: "0.0.0.0",
+    },
+    (info) => {
+      console.log(`Server is running on http://0.0.0.0:${info.port}`);
+      console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      const origin = [
+        process.env.ADMIN_FRONTEND_URL!,
+        process.env.PRO_FRONTEND_URL!,
+      ];
+      console.log(`CORS enabled for: ${JSON.stringify(origin)}`);
+      console.log(
+        `Health check available at: http://0.0.0.0:${info.port}/api/health`
+      );
+    }
+  );
+} catch (error) {
+  console.error("Failed to start server:", error);
+  process.exit(1);
+}
 
 export type AppType = typeof app;
-
-serve(
-  {
-    fetch: app.fetch,
-    port: 3000,
-  },
-  (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
-  }
-);

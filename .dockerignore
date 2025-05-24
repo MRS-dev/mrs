@@ -1,0 +1,24 @@
+# Ignorer tous les node_modules
+**/node_modules
+
+# Ignorer les dossiers de build
+**/.next
+**/dist
+**/build
+
+# Ignorer les fichiers de cache
+**/.cache
+**/.turbo
+
+# Ignorer les fichiers de développement
+**/.git
+**/.env*
+**/.vscode
+**/.idea
+
+# Ignorer les logs
+**/*.log
+
+# Ignorer les fichiers temporaires
+**/tmp
+**/temp 

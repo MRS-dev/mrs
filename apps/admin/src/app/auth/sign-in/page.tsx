@@ -17,6 +17,8 @@ import { useSignIn } from "@/queries/auth/useSignIn";
 import InputPassword from "@/components/mrs/MrsInputPassword";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes";
+import { queryKeys } from "@/queries/queryKeys";
+import { useQueryClient } from "@tanstack/react-query";
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -25,6 +27,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
@@ -35,7 +38,10 @@ const LoginPage: React.FC = () => {
   });
 
   const signInMutation = useSignIn({
-    onSuccess: () => router.push(ROUTES.home),
+    onSuccess: () => {
+      router.push(ROUTES.mfaVerify);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user });
+    },
   });
   const onSubmit = (data: LoginFormInputs) => {
     console.log("LOGON", data);
@@ -81,20 +87,6 @@ const LoginPage: React.FC = () => {
             </Button>
           </form>
         </Form>
-        {/* <Button
-              className="w-full my-4"
-              variant="primary"
-              type="button"
-              size="lg"
-              onClick={() => createDoctorMutation.mutate()}
-              disabled={createDoctorMutation.isPending}
-            >
-              {createDoctorMutation.isPending ? (
-                <LoaderCircle className="animate-spin mr-2" />
-              ) : (
-                "Créer un docteur"
-              )}
-            </Button> */}
       </div>
     </div>
   );

@@ -37,9 +37,12 @@ const registrationRequestSchema = z.object({
   cni: z
     .array(
       z
-        .instanceof(File)
+        .any()
         .refine(
           (file) =>
+            file &&
+            typeof file === "object" &&
+            "type" in file &&
             ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
           "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
         )
@@ -49,9 +52,12 @@ const registrationRequestSchema = z.object({
   healthCard: z
     .array(
       z
-        .instanceof(File)
+        .any()
         .refine(
           (file) =>
+            file &&
+            typeof file === "object" &&
+            "type" in file &&
             ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
           "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
         )

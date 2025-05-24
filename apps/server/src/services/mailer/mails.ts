@@ -330,7 +330,7 @@ export const sendResetPasswordEmail = async ({
             <p>Vous avez demandé à réinitialiser votre mot de passe. Pour procéder, veuillez cliquer sur le bouton ci-dessous :</p>
             <div class="button-container">
               <a
-                href="http://localhost:5173/reset-password?token=${resetToken}"
+                href="${process.env.PRO_FRONTEND_URL}/reset-password?token=${resetToken}"
                 class="button"
               >
                 Réinitialiser mon mot de passe
