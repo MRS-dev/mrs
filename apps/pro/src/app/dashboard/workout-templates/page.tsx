@@ -16,9 +16,9 @@ import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { ROUTES } from "@/routes";
 import Link from "next/link";
 import { formatTime } from "@/lib/date";
-import { useWorkoutTemplates } from "@/queries/workoutTemplates/useWorkoutTemplates";
-import { useExercise } from "@/queries/exercises/useExercise";
+import { useExercise } from "../../../queries/exercises/useExercise";
 import GridLayout from "@/components/mrs/GridLayout";
+import { useWorkoutTemplates } from "@/queries/workoutTemplates/useWorkoutTemplates";
 
 const ITEMS_PER_PAGE = 10;
 const ProgramTemplates: React.FC = () => {
