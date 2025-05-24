@@ -12,6 +12,11 @@
         "apps/server/.vercel/output/**"
       ]
     },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

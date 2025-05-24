@@ -1,4 +1,5 @@
 export const queryKeys = {
+  user: () => ["user"],
   admins: () => ["admins"],
   registrationRequests: () => ["registration-requests"],
   registrationRequest: (id: string) => ["registration-requests", id],

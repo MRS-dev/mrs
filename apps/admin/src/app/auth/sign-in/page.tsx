@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
   const signInMutation = useSignIn({
     onSuccess: () => {
       router.push(ROUTES.mfaVerify);
-      queryClient.invalidateQueries({ queryKey: queryKeys.user });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
     },
   });
   const onSubmit = (data: LoginFormInputs) => {

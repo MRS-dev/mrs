@@ -3,6 +3,7 @@ FROM node:20.10.0-alpine AS base
 RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
 RUN apk add --no-cache netcat-openbsd
 
+FROM base AS development
 WORKDIR /app
 
 # Copier uniquement les fichiers nécessaires pour l'installation

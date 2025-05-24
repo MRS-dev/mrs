@@ -57,7 +57,7 @@ try {
     {
       fetch: app.fetch,
       port: Number(port),
-      hostname: "0.0.0.0",
+      hostname: "localhost",
     },
     (info) => {
       console.log(`Server is running on http://0.0.0.0:${info.port}`);
