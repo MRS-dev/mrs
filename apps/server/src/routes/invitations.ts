@@ -67,6 +67,7 @@ const invitationsRoutes = new Hono<HonoType>()
         },
       });
 
+      console.log("ADMIN; ", admin);
       await db
         .update(invitations)
         .set({ acceptedAt: new Date() })
