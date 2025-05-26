@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build-force": "turbo run build --force",
     "start": "turbo run start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
