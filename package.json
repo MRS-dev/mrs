@@ -3,12 +3,14 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build-force": "turbo run build --force",
     "start": "turbo run start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "sync-env": "cp .env apps/admin/.env && cp .env apps/pro/.env && cp .env apps/server/.env"
+    "sync-env": "cp .env apps/admin/.env && cp .env apps/pro/.env && cp .env apps/server/.env",
+    "sync-env-sb": "cp preprod.env apps/admin/.env && cp preprod.env apps/pro/.env && cp preprod.env apps/server/.env"
   },
   "devDependencies": {
     "prettier": "^3.5.3",
