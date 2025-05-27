@@ -15,8 +15,8 @@ import {
   createPatientSchema,
   updatePatientSchema,
 } from "../validations/patients";
-import { pros } from "src/schemas/pros";
-import { user } from "src/schemas/auth";
+import { pros } from "../schemas/pros";
+import { user } from "../schemas/auth";
 
 const patientsRoutes = new Hono<HonoType>()
   .basePath("/patients")
