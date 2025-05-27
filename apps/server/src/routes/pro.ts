@@ -15,6 +15,8 @@ import {
   createPatientSchema,
   updatePatientSchema,
 } from "../validations/patients";
+import { pros } from "src/schemas/pros";
+import { user } from "src/schemas/auth";
 
 const patientsRoutes = new Hono<HonoType>()
   .basePath("/patients")
@@ -60,6 +62,21 @@ const patientsRoutes = new Hono<HonoType>()
         limit,
       })
     );
+  })
+  .get("/:id", async (c) => {
+    const { id } = c.req.param();
+    const pro = await db
+      .select({
+        id: pros.id,
+        firstName: pros.firstName,
+        lastName: pros.lastName,
+        email: user.email,
+        phoneNumber: pros.phoneNumber,
+      })
+      .from(pros)
+      .where(eq(pros.id, id))
+      .leftJoin(user, eq(pros.id, user.id));
+    return c.json(pro);
   })
   .get("/:patientId", async (c) => {
     const user = c.get("user");

@@ -17,4 +17,13 @@ export const queryKeys = {
     params || {},
   ],
   activity: (id: string) => ["activities", id],
+
+  workoutTemplates: (params: { page: number; limit: number }) => [
+    "workoutTemplates",
+    params,
+  ],
+  workoutTemplate: (workoutTemplateId: string) => [
+    "workoutTemplate",
+    workoutTemplateId,
+  ],
 };
