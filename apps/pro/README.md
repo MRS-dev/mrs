@@ -51,13 +51,25 @@ Veille à bien respecter la casse dans tous les imports.
 Pour relancer les services manuellement :
 
 ```bash
-sudo systemctl restart mrs-server mrs-admin mrs-pro
+sudo systemctl restart [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
+```
+
+Pour stop un services manuellement :
+
+```bash
+sudo systemctl stop [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
+```
+
+Pour start un services manuellement :
+
+```bash
+sudo systemctl start [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
 ```
 
 Pour inspecter les logs :
 
 ```bash
-journalctl -u mrs-server -f
+journalctl -u [ mon service ] -f
 ```
 
 ---
