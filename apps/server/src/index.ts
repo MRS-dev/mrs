@@ -1,6 +1,14 @@
 // apps/server/src/index.ts
 import "dotenv/config"; // Charge les variables depuis .env dans process.env
 
+process.on("uncaughtException", (err) => {
+  console.error("💥 Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("💥 Unhandled Rejection:", reason);
+});
+
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { type HonoType } from "./lib/auth";
