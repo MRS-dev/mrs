@@ -1,84 +1,78 @@
-# Turborepo starter
+# Maroutine Santé – Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+Ce dépôt contient l'ensemble des applications du projet **Maroutine Santé**, organisées dans un monorepo géré avec PNPM et Turborepo.
 
-## Using this example
-
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📦 Structure
 
 ```
-cd my-turborepo
-pnpm build
+apps/
+├── admin      # Interface d'administration (Next.js)
+├── pro        # Interface utilisateur "pro" (dashboard)
+├── server     # Backend Hono (API REST)
 ```
 
-### Develop
+## 🚀 Déploiement
 
-To develop all apps and packages, run the following command:
+Le déploiement est automatisé via **GitHub Actions** dès qu'un `git push` est effectué sur la branche `mrs-sb`.
 
+### CI/CD
+
+1. Une clé SSH privée est utilisée pour se connecter au serveur.
+2. Le script :
+   - Fait un `git pull`
+   - Installe les dépendances
+   - Build toutes les apps avec Turbo
+   - Redémarre les services via `systemd`
+
+Fichier de pipeline CI/CD : `.github/workflows/deploy.yml`
+
+## 🔧 Services et ports
+
+| App    | Port | Domaine                             |
+| ------ | ---- | ----------------------------------- |
+| admin  | 3002 | https://mrs-admin.maroutinesante.fr |
+| pro    | 3001 | https://dashboard.maroutinesante.fr |
+| server | 3000 | Interne (API REST)                  |
+
+## 🛠 Lancer en local
+
+```bash
+pnpm install
+pnpm run dev
 ```
-cd my-turborepo
-pnpm dev
+
+## ⚠️ Attention
+
+Le serveur est sensible à la casse des fichiers (`Linux`).
+Veille à bien respecter la casse dans tous les imports.
+
+## 🧼 Maintenance
+
+Pour relancer les services manuellement :
+
+```bash
+sudo systemctl restart [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
+ex: sudo systemctl restart mrs-server  mrs-admin mrs-pro
 ```
 
-### Remote Caching
+Pour stop un services manuellement :
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```bash
+sudo systemctl stop [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Pour start un services manuellement :
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+```bash
+sudo systemctl start [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
 ```
 
-## Useful Links
+Pour inspecter les logs :
 
-Learn more about the power of Turborepo:
+```bash
+journalctl -u [ mon service ] -f
+```
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+---
+
+Maintenu par l'équipe MaRoutineSanté.

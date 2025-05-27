@@ -4,13 +4,15 @@ export interface UseModalParams {
   defaultOpen?: boolean;
 }
 export const useModal = (params?: UseModalParams) => {
-  const [open, setOpen] = useState(params?.defaultOpen);
+  const [open, setOpen] = useState(!!params?.defaultOpen);
   const onClose = () => {
     setOpen(false);
   };
   const onOpen = () => {
+    console.log("onOpen", open);
     setOpen(true);
   };
+
   return {
     open,
     onClose,

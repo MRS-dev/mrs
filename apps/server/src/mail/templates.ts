@@ -180,7 +180,7 @@ export const mailTemplate = {
         <div class="content">
           <p>Bonjour,</p>
           <p>Vous avez été invité à rejoindre Ma Routine Santé. Pour accéder à votre compte, veuillez cliquer sur le lien ci-dessous :</p>
-          <a href="${process.env.ADMIN_FRONTEND_URL}/invitation?token=${token}">Accepter l'invitation</a>
+          <a href="${process.env.ADMIN_FRONTEND_URL}/auth/invitation?token=${token}">Accepter l'invitation</a>
         </div>
         <div class="footer">
           <p>— L'équipe Support</p>
@@ -305,6 +305,69 @@ export const mailTemplate = {
           <p>Bonjour,</p>
           <p>${proName} vous a invité à rejoindre Ma Routine Santé. Pour valider la création de votre compte, veuillez cliquer sur le lien ci-dessous :</p>
           <a href="${process.env.PRO_FRONTEND_URL}/auth/invitation?token=${token}">Finaliser votre inscription</a>
+        </div>
+      </div>
+    </body>
+    </html>`;
+    return { subject, html };
+  },
+  proInvitationEmail: ({
+    email,
+    lastName,
+    firstName,
+  }: {
+    email: string;
+    lastName: string;
+    firstName: string;
+  }) => {
+    const subject = "Veuillez remplir ce formulaire";
+    const html = `<!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          color: #333;
+        }
+        .content {
+          text-align: left;
+          color: #333;
+          font-size: 16px;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 20px;
+          color: #888;
+          font-size: 14px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Bienvenue et merci pour votre demande !</h1>
+        </div>
+        <div class="content">
+          <p>Bonjour,</p>
+          <p>Veuillez remplir ce formulaire pour finaliser votre inscription :</p>
+          <a href="${process.env.PRO_FRONTEND_URL}/registration-request">Remplir le formulaire</a>
         </div>
       </div>
     </body>

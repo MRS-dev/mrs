@@ -134,6 +134,9 @@ importers:
       lucide-react:
         specifier: ^0.510.0
         version: 0.510.0(react@19.1.0)
+      motion:
+        specifier: ^12.12.1
+        version: 12.12.2(react-dom@19.1.0)(react@19.1.0)
       next:
         specifier: 15.3.2
         version: 15.3.2(react-dom@19.1.0)(react@19.1.0)
@@ -424,6 +427,9 @@ importers:
       hono:
         specifier: ^4.7.9
         version: 4.7.10
+      motion:
+        specifier: ^12.12.1
+        version: 12.12.2(react-dom@19.1.0)(react@19.1.0)
       node-mailjet:
         specifier: ^6.0.8
         version: 6.0.8

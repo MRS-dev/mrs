@@ -17,7 +17,7 @@ import {
 
 const workoutTemplatesRoutes = new Hono<HonoType>()
   .basePath("/workout-templates")
-  .use(roles("pro"))
+  .use(roles("pro", "admin"))
   .get("/", zValidator("query", paginationSchema), async (c) => {
     const user = c.get("user");
     const userId = user?.id;
@@ -107,6 +107,7 @@ const workoutTemplatesRoutes = new Hono<HonoType>()
       name,
       program,
       authorId: userId,
+      public: user.role === "admin" ? true : false,
     });
     return c.json(workoutTemplate);
   })

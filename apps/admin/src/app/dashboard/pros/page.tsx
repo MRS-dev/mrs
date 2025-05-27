@@ -2,22 +2,15 @@
 import React, { useMemo } from "react";
 import SidebarLayout from "@/components/core/SidebarLayout";
 import { Button } from "@/components/ui/button";
-import {
-  CalendarCheck,
-  ChevronRight,
-  MapPinIcon,
-  Plus,
-  Search,
-} from "lucide-react";
+import { CalendarCheck, ChevronRight, MapPinIcon, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { useModal } from "@/hooks/useModale";
 import GridLayout from "@/components/mrs/GridLayout";
 import { usePros } from "@/queries/pros/usePros";
-import Link from "next/link";
-import { ROUTES } from "@/routes";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
 import { format } from "date-fns";
+import { InviteProModal } from "@/modals/InviteProModal";
 
 export default function Pros() {
   const prosQuery = usePros();
@@ -26,14 +19,17 @@ export default function Pros() {
     return prosQuery?.data?.pages.flatMap((page) => page.items);
   }, [prosQuery.data]);
 
-  const createExerciseModal = useModal();
+  const inviteProModal = useModal();
+  console.log("INVITE PRO MODAL", inviteProModal.open);
   return (
     <>
       <SidebarLayout
         Header={
           <SidebarLayoutHeader>
             <div className="flex flex-row items-center gap-2 justify-between flex-1 w-full">
-              <h1 className="text-2xl font-bold">Les kinés</h1>
+              <h1 className="text-2xl font-bold">
+                Les kinés {inviteProModal.open ? "1" : "2"}
+              </h1>
               <div className="flex flex-row items-center space-x-3">
                 <div className="relative">
                   <Input
@@ -52,9 +48,13 @@ export default function Pros() {
                   >
                     <span>Importer</span>
                   </Button> */}
-                  <Button onClick={createExerciseModal.onOpen}>
-                    <Plus className="size-4" />
-                    <span>Créer</span>
+                  <Button
+                    onClick={() => {
+                      inviteProModal.onOpen();
+                      console.log("inviteProModal");
+                    }}
+                  >
+                    <span>Inviter</span>
                   </Button>
                 </div>
               </div>
@@ -66,8 +66,8 @@ export default function Pros() {
           <GridLayout
             items={pros || []}
             renderGridItem={(pro) => (
-              <Link
-                href={ROUTES.pro("test")}
+              <div
+                // href={ROUTES.pro("test")}
                 className="bg-background rounded-xl border shadow-sm p-4 flex flex-row items-start gap-2 hover:shadow-md cursor-pointer"
               >
                 <MrsAvatar
@@ -104,7 +104,7 @@ export default function Pros() {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </div>
             )}
             keyExtractor={(pro) => pro.id}
             isLoading={prosQuery.isLoading}
@@ -114,8 +114,7 @@ export default function Pros() {
           />
         </div>
       </SidebarLayout>
-
-      {/* <CreateExerciseModal {...createExerciseModal} /> */}
+      <InviteProModal {...inviteProModal} />
     </>
   );
 }

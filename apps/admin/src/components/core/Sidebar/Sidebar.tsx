@@ -135,7 +135,7 @@ const SidebarContent = () => {
         label="Exercices"
       />
       <SidebarLink
-        to={ROUTES.programTemplates}
+        to={ROUTES.workoutTemplates}
         Icon={<Waypoints />}
         label="Programmes"
       />

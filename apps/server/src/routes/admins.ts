@@ -12,6 +12,7 @@ import { sendMail } from "../mail/mailer";
 import { toPaginatedResponse } from "../lib/utils/paginations";
 import { getQueryPagination, paginationSchema } from "../lib/utils/paginations";
 import { patients } from "../schemas/patients";
+import { pros } from "src/schemas/pros";
 
 const adminsRoutes = new Hono<HonoType>()
   .basePath("/admins")
@@ -113,6 +114,32 @@ const adminsRoutes = new Hono<HonoType>()
       return c.json(admin);
     }
   )
+  .post(
+    "/invite/pro",
+    roles("admin"),
+    zValidator(
+      "json",
+      z
+        .object({
+          email: z.string().email(),
+          emailConfirmation: z.string().email(),
+          firstName: z.string().min(1),
+          lastName: z.string().min(1),
+        })
+        .refine((data) => data.email === data.emailConfirmation, {
+          message: "Emails do not match",
+          path: ["emailConfirmation"],
+        })
+    ),
+    async (c) => {
+      const { email, firstName, lastName } = await c.req.json();
+      await sendMail({
+        to: email,
+        ...mailTemplate.proInvitationEmail({ email, lastName, firstName }),
+      });
+      return c.json({ message: "Invitation sent" });
+    }
+  )
   .get(
     "/patients",
     roles("admin"),
@@ -150,6 +177,6 @@ const adminsRoutes = new Hono<HonoType>()
         })
       );
     }
-  )
+  );
 
 export default adminsRoutes;

@@ -27,6 +27,9 @@ export const ROUTES_DEF = {
   me: "/dashboard/me",
   registrationRequests: "/dashboard/registration-requests",
   verification: "/dashboard/verification",
+
+  workoutTemplates: "/dashboard/workout-templates",
+  workoutTemplate: "/dashboard/workout-templates/:workoutTemplateId",
 };
 
 export const ROUTES = {
@@ -40,4 +43,6 @@ export const ROUTES = {
   user: (id: string) => ROUTES_DEF.user.replace(":id", id),
   users: (id: string) => ROUTES_DEF.users.replace(":id", id),
   admin: (id: string) => ROUTES_DEF.admin.replace(":id", id),
+  workoutTemplate: (workoutTemplateId: string) =>
+    ROUTES_DEF.workoutTemplate.replace(":workoutTemplateId", workoutTemplateId),
 };
