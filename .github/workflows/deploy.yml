@@ -20,5 +20,6 @@ jobs:
             cd /home/debian/srv/mrs
             git pull origin mrs-sb
             pnpm install
+            pnpm run sync-env
             pnpm run build
             /home/debian/scripts/restart-mrs-services.sh
