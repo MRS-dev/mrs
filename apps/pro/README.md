@@ -52,6 +52,7 @@ Pour relancer les services manuellement :
 
 ```bash
 sudo systemctl restart [ mon service ] soit (mrs-server / mrs-admin / mrs-pro)
+ex: sudo systemctl restart mrs-server  mrs-admin mrs-pro
 ```
 
 Pour stop un services manuellement :
