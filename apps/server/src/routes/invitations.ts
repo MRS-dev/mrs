@@ -75,7 +75,6 @@ const invitationsRoutes = new Hono<HonoType>()
       return c.json(admin);
     }
   )
-  .pro()
   .post(
     "/pro/accept",
     zValidator(

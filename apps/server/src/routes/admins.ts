@@ -4,7 +4,7 @@ import { roles } from "../lib/roles";
 import { db } from "../lib/db";
 import { zValidator } from "@hono/zod-validator";
 import { user } from "../schemas/auth";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { invitations } from "../schemas/invitations";
 import { z } from "zod";
 import { mailTemplate } from "../mail/templates";
@@ -12,7 +12,6 @@ import { sendMail } from "../mail/mailer";
 import { toPaginatedResponse } from "../lib/utils/paginations";
 import { getQueryPagination, paginationSchema } from "../lib/utils/paginations";
 import { patients } from "../schemas/patients";
-import { pros } from "src/schemas/pros";
 
 const adminsRoutes = new Hono<HonoType>()
   .basePath("/admins")
