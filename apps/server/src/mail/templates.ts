@@ -180,7 +180,7 @@ export const mailTemplate = {
         <div class="content">
           <p>Bonjour,</p>
           <p>Vous avez été invité à rejoindre Ma Routine Santé. Pour accéder à votre compte, veuillez cliquer sur le lien ci-dessous :</p>
-          <a href="${process.env.ADMIN_FRONTEND_URL}/invitation?token=${token}">Accepter l'invitation</a>
+          <a href="${process.env.ADMIN_FRONTEND_URL}/auth/invitation?token=${token}">Accepter l'invitation</a>
         </div>
         <div class="footer">
           <p>— L'équipe Support</p>
