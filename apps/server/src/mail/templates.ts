@@ -304,7 +304,7 @@ export const mailTemplate = {
         <div class="content">
           <p>Bonjour,</p>
           <p>${proName} vous a invité à rejoindre Ma Routine Santé. Pour valider la création de votre compte, veuillez cliquer sur le lien ci-dessous :</p>
-          <a href="${process.env.PRO_FRONTEND_URL}/auth/invitation?token=${token}">Finaliser votre inscription</a>
+          <a href="${process.env.PATIENT_FRONTEND_URL}/auth/invitation?token=${token}">Finaliser votre inscription</a>
         </div>
       </div>
     </body>

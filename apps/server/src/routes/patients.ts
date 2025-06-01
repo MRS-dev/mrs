@@ -23,7 +23,7 @@ import { pros } from "../schemas/pros";
 
 const patientsRoutes = new Hono<HonoType>()
   .basePath("/patients")
-  .use("*", roles("pro"))
+  .use("*", roles("authenticated"))
   .get(
     "/",
     zValidator(
@@ -91,6 +91,20 @@ const patientsRoutes = new Hono<HonoType>()
       );
     }
   )
+  .get("/me", async (c) => {
+    const user = c.get("user");
+    const userId = user?.id || "";
+    console.log("::::::::::::::::::::::::::::::::userId", userId);
+    console.log("--------------------------------user", user);
+    const [patient] = await db
+      .select()
+      .from(patients)
+      .where(eq(patients.userId, userId));
+    if (!patient) {
+      return c.json({ error: "Patient not found" }, 404);
+    }
+    return c.json(patient);
+  })
   .get("/:patientId", async (c) => {
     const user = c.get("user");
     const userId = user?.id;

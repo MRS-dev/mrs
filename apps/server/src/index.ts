@@ -35,7 +35,11 @@ const app = new Hono<HonoType>()
   .use(
     "/api/*",
     cors({
-      origin: [process.env.ADMIN_FRONTEND_URL!, process.env.PRO_FRONTEND_URL!],
+      origin: [
+        process.env.ADMIN_FRONTEND_URL!,
+        process.env.PRO_FRONTEND_URL!,
+        process.env.PATIENT_FRONTEND_URL!,
+      ],
       allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
       credentials: true,
@@ -73,6 +77,7 @@ try {
       const origin = [
         process.env.ADMIN_FRONTEND_URL!,
         process.env.PRO_FRONTEND_URL!,
+        process.env.PATIENT_FRONTEND_URL!,
       ];
       console.log(`CORS enabled for: ${JSON.stringify(origin)}`);
       console.log(
