@@ -33,7 +33,7 @@ console.log("origins", [
 ]);
 const app = new Hono<HonoType>()
   .use(
-    "/api/*",
+    "/api",
     cors({
       origin: [
         process.env.ADMIN_FRONTEND_URL!,
@@ -74,6 +74,12 @@ try {
     (info) => {
       console.log(`Server is running on http://0.0.0.0:${info.port}`);
       console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(
+        "CORS ORIGINS:",
+        process.env.ADMIN_FRONTEND_URL,
+        process.env.PRO_FRONTEND_URL
+      );
+
       const origin = [
         process.env.ADMIN_FRONTEND_URL!,
         process.env.PRO_FRONTEND_URL!,
