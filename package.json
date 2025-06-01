@@ -7,6 +7,7 @@
     "start": "turbo run start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "drizzle-studio": "cd apps/server && npx drizzle-kit studio && cd ../..",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "sync-env": "cp .env apps/admin/.env && cp .env apps/pro/.env && cp .env apps/server/.env",

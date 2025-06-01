@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes";
 import { queryKeys } from "@/queries/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -86,6 +87,15 @@ const LoginPage: React.FC = () => {
               Se connecter
             </Button>
           </form>
+          <Link
+            href={ROUTES.registrationRequest}
+            className="text-sm text-muted-foreground"
+          >
+            Pas de compte ?{" "}
+            <span className="underline text-primary">
+              Demander la création d&apos;un compte
+            </span>
+          </Link>
         </Form>
         {/* <Button
               className="w-full my-4"
