@@ -18,9 +18,9 @@ import { useChats } from "@/queries/chats/useChats";
 import { useMessages } from "@/queries/messages/useMessages";
 import { useCreateMessage } from "@/queries/messages/useCreateMessage";
 import { timeAgo } from "@/lib/date";
-import { CreateChatModal } from "@/components/modals/CreateChatModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
+import { CreateChatModal } from "@/modals/CreateChatModal";
 
 type MessageFormInputs = z.infer<typeof messageSchema>;
 const messageSchema = z.object({
@@ -28,8 +28,7 @@ const messageSchema = z.object({
 });
 
 export default function Chats() {
-  const userQuery = useUser();
-  const userId = userQuery.data?.data?.user?.id || "";
+  const user = useUser();
   const createChatModal = useModal();
 
   const sendMessageform = useForm<MessageFormInputs>({
@@ -90,10 +89,7 @@ export default function Chats() {
             <div className="flex flex-row items-center gap-2 justify-between flex-1 w-full">
               <h1 className="text-2xl font-bold">Messagerie</h1>
               <div className="flex flex-row items-center space-x-3">
-                <Button
-                  variant="primary"
-                  onClick={() => createChatModal.onOpenChange(true)}
-                >
+                <Button onClick={() => createChatModal.onOpenChange(true)}>
                   <Plus /> Nouveau chat
                 </Button>
               </div>
@@ -169,7 +165,7 @@ export default function Chats() {
                     <div
                       key={message.id}
                       className={`flex mb-4 ${
-                        message.senderId === userId
+                        message.senderId === user?.data?.user?.id
                           ? "justify-end"
                           : "justify-start"
                       }`}
@@ -177,7 +173,7 @@ export default function Chats() {
                       <div
                         className={cn(
                           "max-w-96 p-3 rounded-xl relative",
-                          message.senderId === userId
+                          message.senderId === user?.data?.user?.id
                             ? "bg-primary text-primary-foreground rounded-br-none"
                             : "bg-muted text-foreground rounded-bl-none"
                         )}
@@ -189,7 +185,7 @@ export default function Chats() {
                         <div
                           className={cn(
                             "absolute inline-block w-0 h-0 top-full",
-                            message.senderId === userId
+                            message.senderId === user?.data?.user?.id
                               ? "right-0 border-t-8 border-t-primary border-l-8 border-l-transparent"
                               : "left-0 border-t-8  border-t-muted border-r-8 border-r-transparent"
                           )}
@@ -219,7 +215,7 @@ export default function Chats() {
                 />
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="default"
                   className="h-11"
                   //disabled={sendMessageMutation?.isLoading}
                 >

@@ -61,7 +61,7 @@ const AccountBilling: React.FC = () => {
 
   return (
     <div>
-      <Button variant="primary" size="lg">
+      <Button variant="default" size="lg">
         Gérer mon abonnement
       </Button>
     </div>

@@ -39,7 +39,8 @@ export const CreateChatModal = (props: ModalProps) => {
       receivedId: "",
     },
   });
-
+  const user = useUser();
+  const userId = user?.data?.user?.id || "";
   const queryClient = useQueryClient();
   const createChat = useCreateChat({
     onSuccess: () => {
@@ -48,9 +49,6 @@ export const CreateChatModal = (props: ModalProps) => {
       });
     },
   });
-
-  const userQuery = useUser();
-  const userId = userQuery.data?.data?.user?.id || "";
 
   const onSubmit = (data: CreateChatFormInputs) => {
     createChat.mutate({
@@ -108,7 +106,7 @@ export const CreateChatModal = (props: ModalProps) => {
                 Annuler
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 size="lg"
                 type="submit"
                 disabled={createChat.isPending}

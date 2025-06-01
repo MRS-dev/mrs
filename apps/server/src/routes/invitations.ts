@@ -214,7 +214,12 @@ const invitationsRoutes = new Hono<HonoType>()
         .update(invitations)
         .set({ acceptedAt: new Date() })
         .where(eq(invitations.email, email));
-
+      await db
+        .update(patients)
+        .set({
+          userId: user.id,
+        })
+        .where(eq(patients.email, email));
       return c.json(user);
     }
   );

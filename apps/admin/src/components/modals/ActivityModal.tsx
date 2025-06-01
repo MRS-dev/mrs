@@ -22,6 +22,7 @@ import { useActivity } from "@/queries/activities/useActivity";
 import { useDeleteActivity } from "@/queries/activities/useDeleteActivity";
 import { useUpdateActivity } from "@/queries/activities/useUpdateActivity";
 import { MrsConfirmationModal } from "../mrs/MrsConfirmationModal";
+import { toast } from "sonner";
 
 const activitySchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
@@ -56,9 +57,20 @@ export const ActivityModal = (props: ActivityModalProps) => {
   const confirmationModal = useModal();
   const deleteActivityMutation = useDeleteActivity({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.activities() });
+      queryClient.invalidateQueries({
+        queryKey: [
+          queryKeys.activities(),
+          queryKeys.activity(props.activityId),
+        ],
+      });
+      toast.success("Activité supprimée avec succès");
       props.onClose();
       confirmationModal.onClose();
+    },
+    onError: () => {
+      toast.error(
+        "Une erreur est survenue lors de la suppression de l'activité"
+      );
     },
   });
   const updateActivityMutation = useUpdateActivity({

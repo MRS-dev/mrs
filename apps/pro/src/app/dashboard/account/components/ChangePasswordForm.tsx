@@ -85,7 +85,7 @@ const ChangePasswordForm: React.FC = () => {
           <Button
             type="submit"
             className="my-4"
-            variant="primary"
+            variant="default"
             size="lg"
             disabled={changePassword.isPending}
           >

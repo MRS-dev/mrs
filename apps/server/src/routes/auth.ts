@@ -12,9 +12,11 @@ const authRoutes = new Hono<HonoType>()
     c.set("session", session?.session ?? null);
     await next();
   })
-  .on(["GET", "POST"], "auth/*", (c) => {
+  .on(["GET", "POST"], "auth/*", async (c) => {
     console.log("authRoutes handler invoked for:", c.req.url);
-    return auth.handler(c.req.raw);
+    const test = await auth.handler(c.req.raw);
+    console.log("test status", test.status);
+    return test;
   })
   .get("auth/session", async (c) => {
     const session = c.get("session");
