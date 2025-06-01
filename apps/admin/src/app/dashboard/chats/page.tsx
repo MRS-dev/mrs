@@ -165,7 +165,7 @@ export default function Chats() {
                     <div
                       key={message.id}
                       className={`flex mb-4 ${
-                        message.senderId === user?.data?.data?.user?.id
+                        message.senderId === user?.data?.user?.id
                           ? "justify-end"
                           : "justify-start"
                       }`}
@@ -173,7 +173,7 @@ export default function Chats() {
                       <div
                         className={cn(
                           "max-w-96 p-3 rounded-xl relative",
-                          message.senderId === user?.data?.data?.user?.id
+                          message.senderId === user?.data?.user?.id
                             ? "bg-primary text-primary-foreground rounded-br-none"
                             : "bg-muted text-foreground rounded-bl-none"
                         )}
@@ -185,7 +185,7 @@ export default function Chats() {
                         <div
                           className={cn(
                             "absolute inline-block w-0 h-0 top-full",
-                            message.senderId === user?.data?.data?.user?.id
+                            message.senderId === user?.data?.user?.id
                               ? "right-0 border-t-8 border-t-primary border-l-8 border-l-transparent"
                               : "left-0 border-t-8  border-t-muted border-r-8 border-r-transparent"
                           )}
@@ -215,7 +215,7 @@ export default function Chats() {
                 />
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="default"
                   className="h-11"
                   //disabled={sendMessageMutation?.isLoading}
                 >

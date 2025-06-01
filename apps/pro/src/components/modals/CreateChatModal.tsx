@@ -39,8 +39,7 @@ export const CreateChatModal = (props: ModalProps) => {
       receivedId: "",
     },
   });
-  const user = useUser();
-  const userId = user?.data?.data?.user?.id || "";
+
   const queryClient = useQueryClient();
   const createChat = useCreateChat({
     onSuccess: () => {
@@ -49,6 +48,9 @@ export const CreateChatModal = (props: ModalProps) => {
       });
     },
   });
+
+  const userQuery = useUser();
+  const userId = userQuery.data?.data?.user?.id || "";
 
   const onSubmit = (data: CreateChatFormInputs) => {
     createChat.mutate({

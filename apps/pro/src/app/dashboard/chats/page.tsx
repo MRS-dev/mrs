@@ -28,7 +28,8 @@ const messageSchema = z.object({
 });
 
 export default function Chats() {
-  const user = useUser();
+  const userQuery = useUser();
+  const userId = userQuery.data?.data?.user?.id || "";
   const createChatModal = useModal();
 
   const sendMessageform = useForm<MessageFormInputs>({
@@ -168,7 +169,7 @@ export default function Chats() {
                     <div
                       key={message.id}
                       className={`flex mb-4 ${
-                        message.senderId === user?.data?.data?.user?.id
+                        message.senderId === userId
                           ? "justify-end"
                           : "justify-start"
                       }`}
@@ -176,7 +177,7 @@ export default function Chats() {
                       <div
                         className={cn(
                           "max-w-96 p-3 rounded-xl relative",
-                          message.senderId === user?.data?.data?.user?.id
+                          message.senderId === userId
                             ? "bg-primary text-primary-foreground rounded-br-none"
                             : "bg-muted text-foreground rounded-bl-none"
                         )}
@@ -188,7 +189,7 @@ export default function Chats() {
                         <div
                           className={cn(
                             "absolute inline-block w-0 h-0 top-full",
-                            message.senderId === user?.data?.data?.user?.id
+                            message.senderId === userId
                               ? "right-0 border-t-8 border-t-primary border-l-8 border-l-transparent"
                               : "left-0 border-t-8  border-t-muted border-r-8 border-r-transparent"
                           )}

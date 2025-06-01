@@ -40,7 +40,7 @@ export const CreateChatModal = (props: ModalProps) => {
     },
   });
   const user = useUser();
-  const userId = user?.data?.data?.user?.id || "";
+  const userId = user?.data?.user?.id || "";
   const queryClient = useQueryClient();
   const createChat = useCreateChat({
     onSuccess: () => {
@@ -106,7 +106,7 @@ export const CreateChatModal = (props: ModalProps) => {
                 Annuler
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 size="lg"
                 type="submit"
                 disabled={createChat.isPending}
