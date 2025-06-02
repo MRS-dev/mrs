@@ -57,6 +57,13 @@ export const auth = betterAuth({
   ],
 });
 
+console.log("✅ Trusted origins loaded in betterAuth:", [
+  process.env.PRO_FRONTEND_URL,
+  process.env.ADMIN_FRONTEND_URL,
+  process.env.PATIENT_FRONTEND_URL,
+  process.env.NEXT_PUBLIC_SERVER_URL,
+]);
+
 export type AuthType = typeof auth;
 export type HonoType = {
   Variables: {
