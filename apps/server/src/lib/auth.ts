@@ -13,7 +13,6 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.PRO_FRONTEND_URL!,
     process.env.ADMIN_FRONTEND_URL!,
-    process.env.PATIENT_FRONTEND_URL!,
     process.env.NEXT_PUBLIC_SERVER_URL!,
   ],
   emailAndPassword: { enabled: true },
@@ -60,7 +59,6 @@ export const auth = betterAuth({
 console.log("✅ Trusted origins loaded in betterAuth:", [
   process.env.PRO_FRONTEND_URL,
   process.env.ADMIN_FRONTEND_URL,
-  process.env.PATIENT_FRONTEND_URL,
   process.env.NEXT_PUBLIC_SERVER_URL,
 ]);
 
