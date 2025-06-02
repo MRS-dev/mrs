@@ -27,14 +27,16 @@ import chatsRoutes from "./routes/chats";
 import adminExercisesRoutes from "./routes/adminExercises";
 import adminProsRoutes from "./routes/adminPros";
 import adminActivitiesRoutes from "./routes/adminActivities";
-console.log("origins", [
+
+const ORIGINS = [
   process.env.ADMIN_FRONTEND_URL!,
   process.env.PRO_FRONTEND_URL!,
-]);
+  process.env.PATIENT_FRONTEND_URL!,
+];
 const app = new Hono<HonoType>()
   .use(
     cors({
-      origin: [process.env.ADMIN_FRONTEND_URL!, process.env.PRO_FRONTEND_URL!],
+      origin: ORIGINS,
       allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
       allowHeaders: ["Content-Type", "Authorization"],
       credentials: true,
@@ -74,13 +76,7 @@ try {
         process.env.ADMIN_FRONTEND_URL,
         process.env.PRO_FRONTEND_URL
       );
-
-      const origin = [
-        process.env.ADMIN_FRONTEND_URL!,
-        process.env.PRO_FRONTEND_URL!,
-        process.env.PATIENT_FRONTEND_URL!,
-      ];
-      console.log(`CORS enabled for: ${JSON.stringify(origin)}`);
+      console.log(`CORS enabled for: ${JSON.stringify(ORIGINS)}`);
       console.log(
         `Health check available at: http://0.0.0.0:${info.port}/api/health`
       );
