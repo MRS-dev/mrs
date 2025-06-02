@@ -20,18 +20,21 @@ const accountInformationsSchema = z.object({
   phone: z.string().min(1),
   address: z.string().min(1),
   city: z.string().min(1),
+  postalCode: z.string().min(1),
 });
 type AccountInformationFormInputs = z.infer<typeof accountInformationsSchema>;
 const AccountInformationForm: React.FC = () => {
   const user = useUser();
+  console.log("user?.data: ", user?.data);
   const form = useForm<AccountInformationFormInputs>({
     resolver: zodResolver(accountInformationsSchema),
     defaultValues: {
       name: user?.data?.data?.user.name,
       email: user?.data?.data?.user.email,
-      phone: "",
-      address: "",
-      city: "",
+      phone: user?.data?.data?.user.phone || "",
+      address: user?.data?.data?.user.address || "",
+      city: user?.data?.data?.user.city || "",
+      postalCode: user?.data?.data?.user.postalCode || "",
     },
   });
   const onSubmit = (data: AccountInformationFormInputs) => {

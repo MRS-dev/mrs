@@ -22,7 +22,9 @@ export function isValidLuhn(number: string): boolean {
   return sum % 10 === 0;
 }
 
-const registrationRequestSchema = z.object({
+const acceptedTypes = ["image/png", "image/jpeg", "application/pdf"];
+
+export const registrationRequestSchema = z.object({
   firstName: z.string().min(1, "Le prénom est requis"),
   lastName: z.string().min(1, "Le nom est requis"),
   email: z.string().email("Adresse e-mail invalide"),
@@ -34,36 +36,44 @@ const registrationRequestSchema = z.object({
   rpps: z
     .string()
     .regex(/^\d{11}$/, "Le numéro RPPS doit contenir exactement 11 chiffres"),
-  cni: z
-    .array(
-      z
-        .any()
-        .refine(
-          (file) =>
-            file &&
-            typeof file === "object" &&
-            "type" in file &&
-            ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
-          "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
-        )
-    )
-    .min(1, "Au moins un fichier CNI est requis")
-    .max(3, "Vous pouvez envoyer jusqu'à 3 fichiers CNI"),
-  healthCard: z
-    .array(
-      z
-        .any()
-        .refine(
-          (file) =>
-            file &&
-            typeof file === "object" &&
-            "type" in file &&
-            ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
-          "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
-        )
-    )
-    .min(1, "Au moins un fichier HealthCard est requis")
-    .max(3, "Vous pouvez envoyer jusqu'à 3 fichiers HealthCard"),
+
+  cni: z.any().refine(
+    (val) => {
+      console.log("🪪 CNI reçu :", val);
+
+      const files = Array.isArray(val) ? val : [val];
+
+      return files.every(
+        (file) =>
+          file &&
+          typeof file === "object" &&
+          "type" in file &&
+          acceptedTypes.includes(file.type)
+      );
+    },
+    {
+      message: "Les fichiers CNI doivent être PNG, JPEG ou PDF",
+    }
+  ),
+
+  healthCard: z.any().refine(
+    (val) => {
+      console.log("🩺 HealthCard reçu :", val);
+
+      const files = Array.isArray(val) ? val : [val];
+
+      return files.every(
+        (file) =>
+          file &&
+          typeof file === "object" &&
+          "type" in file &&
+          acceptedTypes.includes(file.type)
+      );
+    },
+    {
+      message: "Les fichiers de carte de santé doivent être PNG, JPEG ou PDF",
+    }
+  ),
 });
 const registrationRequestsRoutes = new Hono<HonoType>()
   .basePath("/registration-requests")

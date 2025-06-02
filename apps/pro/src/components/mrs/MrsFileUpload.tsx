@@ -162,6 +162,8 @@ const MrsFileUploadArea: React.FC<MrsFileUploadAreaProps> = ({
               <Image
                 src={file.src}
                 alt={`preview-${index}`}
+                width={300}
+                height={300}
                 className="h-20 w-20 object-contain rounded-xl"
               />
             </div>
