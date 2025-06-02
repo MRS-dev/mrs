@@ -42,7 +42,7 @@ const app = new Hono<HonoType>()
     cors({
       origin: ORIGINS,
       allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-      allowHeaders: ["Content-Type", "Authorization"],
+      allowHeaders: ["Content-Type", "Authorization", "Cookie", "Set-Cookie"],
       credentials: true,
     })
   )
