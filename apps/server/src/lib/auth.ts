@@ -27,6 +27,26 @@ export const auth = betterAuth({
       partitioned: true, // New browser standards will mandate this for foreign cookies
     },
   },
+
+  hooks: {
+    async afterAuth(request, response) {
+      console.log("✅ afterAuth hook triggered, adding test cookie");
+
+      response.headers.append(
+        "Set-Cookie",
+        [
+          `better-auth-test=ok`,
+          `Path=/`,
+          `HttpOnly`,
+          `Secure`,
+          `SameSite=None`,
+          `Max-Age=3600`,
+        ].join("; ")
+      );
+
+      return response;
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: authSchema,
