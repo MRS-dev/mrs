@@ -21,6 +21,11 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: true,
     },
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      partitioned: true, // New browser standards will mandate this for foreign cookies
+    },
   },
   database: drizzleAdapter(db, {
     provider: "pg",
