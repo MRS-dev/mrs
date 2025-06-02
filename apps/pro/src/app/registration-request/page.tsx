@@ -31,30 +31,8 @@ const registrationRequestSchema = z.object({
   rpps: z
     .string()
     .regex(/^\d{11}$/, "Le numéro RPPS doit contenir exactement 11 chiffres"),
-  cni: z
-    .array(
-      z
-        .instanceof(File)
-        .refine(
-          (file) =>
-            ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
-          "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
-        )
-    )
-    .min(1, "Au moins un fichier CNI est requis")
-    .max(3, "Vous pouvez envoyer jusqu'à 3 fichiers CNI"),
-  healthCard: z
-    .array(
-      z
-        .instanceof(File)
-        .refine(
-          (file) =>
-            ["image/png", "image/jpeg", "application/pdf"].includes(file.type),
-          "Seuls les fichiers PNG, JPEG ou PDF sont acceptés"
-        )
-    )
-    .min(1, "Au moins un fichier HealthCard est requis")
-    .max(3, "Vous pouvez envoyer jusqu'à 3 fichiers HealthCard"),
+  cni: z.any(),
+  healthCard: z.any(),
 });
 type RegistrationRequestFormInputs = z.infer<typeof registrationRequestSchema>;
 
@@ -81,6 +59,7 @@ const RegistrationRequest: React.FC = () => {
   });
 
   const onSubmit = async (form: RegistrationRequestFormInputs) => {
+    console.log("JE TENTE");
     createRegistrationRequest.mutate({
       form,
     });
