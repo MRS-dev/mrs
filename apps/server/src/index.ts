@@ -34,6 +34,10 @@ const ORIGINS = [
   process.env.PATIENT_FRONTEND_URL!,
 ];
 const app = new Hono<HonoType>()
+  .use("*", async (c, next) => {
+    console.log("Request headers:", c.req.header());
+    await next();
+  })
   .use(
     cors({
       origin: ORIGINS,
