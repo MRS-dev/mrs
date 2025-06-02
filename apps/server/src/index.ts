@@ -37,6 +37,10 @@ import mobileCompatibilityRoutes from "./routes/mobileCompatibility";
 import notificationsRoutes from "./routes/notifications";
 
 const app = new Hono<HonoType>()
+  .use("*", async (c, next) => {
+    console.log("Request headers:", c.req.header());
+    await next();
+  })
   .use(
     cors({
       origin: [
