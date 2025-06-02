@@ -16,7 +16,12 @@ export const auth = betterAuth({
     process.env.NEXT_PUBLIC_SERVER_URL!,
   ],
   emailAndPassword: { enabled: true },
-  advanced: { database: { generateId: false } },
+  advanced: {
+    database: { generateId: false },
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: authSchema,
