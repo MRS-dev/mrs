@@ -21,11 +21,11 @@ const chatsRoutes = new Hono<HonoType>()
         title: chats.title,
         participants: chats.participants,
         lastUpdated: chats.lastUpdated,
-        lastMessage: messages.content,
+        lastMessage: sql`MAX(${messages.content})`.as("lastMessage"), // ✅ Agrégation
       })
       .from(chats)
       .leftJoin(messages, eq(chats.id, messages.chatId))
-      .where(sql`${chats.participants} @> ${[userId]}`)
+      .where(sql`${chats.participants} @> ARRAY[${userId}]::uuid[]`)
       .groupBy(chats.id)
       .orderBy(desc(chats.lastUpdated));
 

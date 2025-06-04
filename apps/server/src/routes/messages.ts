@@ -2,12 +2,11 @@ import { Hono } from "hono";
 import { type HonoType } from "../lib/auth";
 import { roles } from "../lib/roles";
 import { db } from "../lib/db";
-import { eq, desc, sql, and } from "drizzle-orm";
-import { chats } from "../schemas/chats";
+import { eq, desc, and } from "drizzle-orm";
 import { messages } from "../schemas/messages";
 import { zValidator } from "@hono/zod-validator";
-import { createChatSchema } from "../validations/chats";
 import { createMessageSchema } from "../validations/messages";
+import { io } from "src/socket";
 
 const messagesRoutes = new Hono<HonoType>()
   .basePath("/messages")
@@ -20,7 +19,7 @@ const messagesRoutes = new Hono<HonoType>()
       .select()
       .from(messages)
       .where(and(eq(messages.chatId, chatId), eq(messages.senderId, userId)))
-      .orderBy(desc(messages.createdAt));
+      .orderBy(messages.createdAt);
     return c.json(responses);
   })
   .post(
@@ -39,6 +38,9 @@ const messagesRoutes = new Hono<HonoType>()
           .insert(messages)
           .values({ content, chatId, senderId: userId || "" })
           .returning();
+
+        console.log("🔊 Emitting newMessage to chatId:", chatId, newMessage);
+        io.to(chatId).emit("newMessage", newMessage);
         return c.json(newMessage[0], 201);
       } catch (error) {
         console.error("Error creating message:", error);
