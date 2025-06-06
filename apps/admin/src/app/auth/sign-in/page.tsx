@@ -28,7 +28,6 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,7 +38,6 @@ const LoginPage: React.FC = () => {
 
   const signInMutation = useSignIn({
     onSuccess: () => {
-      router.push(ROUTES.mfaVerify);
       queryClient.invalidateQueries({ queryKey: queryKeys.user() });
     },
   });

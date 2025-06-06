@@ -28,6 +28,7 @@ import adminProsRoutes from "./routes/adminPros";
 import adminActivitiesRoutes from "./routes/adminActivities";
 
 import { setupSocketHandlers, io } from "./socket";
+import userRoutes from "./routes/user";
 
 const app = new Hono<HonoType>()
   .use(
@@ -58,6 +59,7 @@ const app = new Hono<HonoType>()
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
   .route("/", adminActivitiesRoutes)
+  .route("/", userRoutes)
   .get("/health", (c) => c.text("OK"));
 
 const port = process.env.PORT || 3000;
