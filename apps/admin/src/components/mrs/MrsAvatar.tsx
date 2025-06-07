@@ -18,7 +18,6 @@ export const MrsAvatar = ({
   children,
   displayName,
 }: MrsAvatarProps) => {
-  console.log("MrsAvatar", src);
   const [isError, setIsError] = useState(!src);
   useEffect(() => {
     if (!src) {

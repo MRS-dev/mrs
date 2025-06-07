@@ -1,5 +1,4 @@
-// apps/server/src/index.ts
-import "dotenv/config"; // Charge les variables depuis .env dans process.env
+import "dotenv/config";
 
 process.on("uncaughtException", (err) => {
   console.error("💥 Uncaught Exception:", err);
@@ -33,6 +32,9 @@ const ORIGINS = [
   process.env.PRO_FRONTEND_URL!,
   process.env.PATIENT_FRONTEND_URL!,
 ];
+import { setupSocketHandlers, io } from "./socket";
+import userRoutes from "./routes/user";
+
 const app = new Hono<HonoType>()
   .use("*", async (c, next) => {
     console.log("Request headers:", c.req.header());
@@ -61,6 +63,7 @@ const app = new Hono<HonoType>()
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
   .route("/", adminActivitiesRoutes)
+  .route("/", userRoutes)
   .get("/health", (c) => c.text("OK"));
 
 const port = process.env.PORT || 3000;
@@ -73,21 +76,25 @@ try {
       hostname: "0.0.0.0",
     },
     (info) => {
-      console.log(`Server is running on http://0.0.0.0:${info.port}`);
-      console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      // On initialise le serveur WebSocket avec l'objet HTTP natif
+      io.listen(3003); // utilise un autre port (par exemple 3001)
+      setupSocketHandlers(io);
+
+      console.log(`🟢 Server is running on http://0.0.0.0:${info.port}`);
+      console.log(`🌱 Environment: ${process.env.NODE_ENV || "development"}`);
+      const origin = [
+        process.env.ADMIN_FRONTEND_URL!,
+        process.env.PRO_FRONTEND_URL!,
+        process.env.PATIENT_FRONTEND_URL!,
+      ];
+      console.log(`🔓 CORS enabled for: ${JSON.stringify(origin)}`);
       console.log(
-        "CORS ORIGINS:",
-        process.env.ADMIN_FRONTEND_URL,
-        process.env.PRO_FRONTEND_URL
-      );
-      console.log(`CORS enabled for: ${JSON.stringify(ORIGINS)}`);
-      console.log(
-        `Health check available at: http://0.0.0.0:${info.port}/api/health`
+        `❤️ Health check available at: http://0.0.0.0:${info.port}/api/health`
       );
     }
   );
 } catch (error) {
-  console.error("Failed to start server:", error);
+  console.error("🚫 Failed to start server:", error);
   process.exit(1);
 }
 

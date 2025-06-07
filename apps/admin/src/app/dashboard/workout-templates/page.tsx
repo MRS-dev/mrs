@@ -79,7 +79,7 @@ const ProgramTemplates: React.FC = () => {
                   créer des séances plus rapidement
                 </p>
                 <div className="flex flex-row items-center justify-start">
-                  <Button variant="primary" asChild className="mt-4">
+                  <Button variant="default" asChild className="mt-4">
                     <Link to={ROUTES.programTemplate("new")}>
                       <Plus className="size-4" />
                       Créer un modèle

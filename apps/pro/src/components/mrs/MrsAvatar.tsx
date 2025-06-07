@@ -18,7 +18,6 @@ export const MrsAvatar = ({
   children,
   displayName,
 }: MrsAvatarProps) => {
-  console.log("MrsAvatar", src);
   const [isError, setIsError] = useState(!src);
   useEffect(() => {
     if (!src) {
@@ -41,7 +40,7 @@ export const MrsAvatar = ({
         )
       ) : (
         <Image
-          src={src}
+          src={src || "/default-avatar.png"}
           alt={alt}
           width={size}
           height={size}

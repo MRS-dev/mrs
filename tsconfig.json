@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@mrs/socket-client": ["packages/socket-client"]
+    },
     "moduleResolution": "Node",
     "resolveJsonModule": true
   }
