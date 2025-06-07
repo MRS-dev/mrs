@@ -86,7 +86,7 @@ export default function PatientReports() {
               <p className="text-base">
                 Créer une séance pour {patient?.firstName} {patient?.lastName}
               </p>
-              <Button variant="primary" asChild className="mt-4">
+              <Button variant="default" asChild className="mt-4">
                 <Link href={ROUTES.newSession + "?patientId=" + patientId}>
                   <Plus /> Nouvelle séance
                 </Link>
@@ -117,7 +117,7 @@ export default function PatientReports() {
                           <BadgeReportStatus sessionId={session.id as string} />
                         </div>
                         <Button
-                          variant="primary"
+                          variant="default"
                           size="sm"
                           onClick={() => handleOpenReportModal(session)}
                         >

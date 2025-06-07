@@ -31,10 +31,6 @@ const AccountInformationForm: React.FC = () => {
     defaultValues: {
       name: user?.data?.data?.user.name,
       email: user?.data?.data?.user.email,
-      phone: user?.data?.data?.user.phone || "",
-      address: user?.data?.data?.user.address || "",
-      city: user?.data?.data?.user.city || "",
-      postalCode: user?.data?.data?.user.postalCode || "",
     },
   });
   const onSubmit = (data: AccountInformationFormInputs) => {
@@ -113,7 +109,7 @@ const AccountInformationForm: React.FC = () => {
           )}
         />
         <div>
-          <Button type="submit" className="my-4" variant="primary" size="lg">
+          <Button type="submit" className="my-4" variant="default" size="lg">
             Enregistrer
           </Button>
         </div>

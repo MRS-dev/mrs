@@ -79,7 +79,7 @@
 //             />
 //             <Button
 //               type="submit"
-//               variant="primary"
+//               variant="default"
 //               disabled={mutation.isPending}
 //             >
 //               {mutation.isPending && (

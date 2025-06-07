@@ -118,7 +118,7 @@ export default function PatientWorkoutSessions() {
               <p className="text-base">
                 Créer une séance pour {patient?.firstName}
               </p>
-              <Button variant="primary" asChild className="mt-4">
+              <Button variant="default" asChild className="mt-4">
                 <Link href={ROUTES.newSession + "?patientId=" + patientId}>
                   <Plus /> Nouvelle séance
                 </Link>

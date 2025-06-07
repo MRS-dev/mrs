@@ -6,7 +6,7 @@ import { eq, desc, and } from "drizzle-orm";
 import { messages } from "../schemas/messages";
 import { zValidator } from "@hono/zod-validator";
 import { createMessageSchema } from "../validations/messages";
-import { io } from "src/socket";
+import { io } from "../socket";
 
 const messagesRoutes = new Hono<HonoType>()
   .basePath("/messages")

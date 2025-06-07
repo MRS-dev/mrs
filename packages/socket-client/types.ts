@@ -8,7 +8,7 @@ export type Message = {
 };
 
 export type Chat = {
-  _id: string; // Identifiant unique de la conversation
+  id: string; // Identifiant unique de la conversation
   participants: string[]; // Liste des IDs des participants (doctor, patient, admin)
   messages: Message[]; // Liste des messages associés à la conversation
   createdAt: string; // Date de création

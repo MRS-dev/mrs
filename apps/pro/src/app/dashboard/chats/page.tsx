@@ -23,8 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
 import socket, { joinChat } from "@mrs/socket-client";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Chat, Message } from "@mrs/socket-client";
-
+import type { Message } from "@mrs/socket-client";
 const messageSchema = z.object({
   content: z.string().min(1, { message: "Le message ne peut pas être vide." }),
 });
@@ -47,20 +46,18 @@ export default function Chats() {
 
   useEffect(() => {
     socket.connect();
-    return () => socket.disconnect();
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
     if (!selectedChat) return;
     joinChat(selectedChat);
 
-    const handleNewMessage = (message: Message) => {
-      console.log("📥 newMessage reçu:", message);
-
+    const handleNewMessage = (message: Message[]) => {
       const msg = message[0];
-      console.log("egual: ", msg?.chatId === selectedChat);
-      console.log(" message?.chatId: ", msg?.chatId);
-      console.log("selectedChat: ", selectedChat);
       if (msg?.chatId === selectedChat) {
         queryClient.setQueryData(
           ["messages", selectedChat],
@@ -73,7 +70,9 @@ export default function Chats() {
     };
 
     socket.on("newMessage", handleNewMessage);
-    return () => socket.off("newMessage", handleNewMessage);
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
   }, [selectedChat, queryClient]);
 
   const chats = useChats();
@@ -87,15 +86,11 @@ export default function Chats() {
           content: data?.content,
           chatId: selectedChat,
         },
-        onSuccess: () => {
-          sendMessageform.reset();
-        },
       });
     })(e);
   };
 
   useEffect(() => {
-    console.log("Chat data: ", chats?.data);
     if (chats?.data?.length) setSelectedChat(chats.data[0].id);
   }, [chats?.data]);
 
@@ -114,7 +109,7 @@ export default function Chats() {
             <div className="flex flex-row items-center gap-2 justify-between flex-1 w-full">
               <h1 className="text-2xl font-bold">Messagerie</h1>
               <Button
-                variant="primary"
+                variant="default"
                 onClick={() => createChatModal.onOpenChange(true)}
               >
                 <Plus /> Nouveau chat
@@ -228,7 +223,7 @@ export default function Chats() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" variant="primary" className="h-11">
+                <Button type="submit" variant="default" className="h-11">
                   <Send className="w-4 h-4 fill-primary-foreground" /> Envoyer
                 </Button>
               </form>

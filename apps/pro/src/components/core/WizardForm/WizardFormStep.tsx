@@ -90,7 +90,7 @@ export const WizardFormStep = <T extends FieldValues>({
           <Button
             type="submit"
             size="lg"
-            variant="primary"
+            variant="default"
             disabled={isLoading}
           >
             {isLoading && <LoaderCircle className="size-4 animate-spin" />}

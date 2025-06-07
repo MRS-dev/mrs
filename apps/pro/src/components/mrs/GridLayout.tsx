@@ -92,7 +92,7 @@ export default function GridLayout<T>({
             </div>
           ) : (
             <Button
-              variant="primary"
+              variant="default"
               onClick={onLoadMore}
               disabled={isLoadingMore}
             >

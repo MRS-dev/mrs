@@ -108,7 +108,7 @@ export const CreateChatModal = (props: ModalProps) => {
                 Annuler
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 size="lg"
                 type="submit"
                 disabled={createChat.isPending}

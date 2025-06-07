@@ -76,7 +76,7 @@ export default function NewSession() {
             <h1 className="text-2xl font-bold">Nouvelle séance</h1>
             <div className="flex flex-row items-center space-x-3">
               <Button
-                variant="primary"
+                variant="default"
                 onClick={() =>
                   createSessionByDatesMutation.mutate({
                     json: {

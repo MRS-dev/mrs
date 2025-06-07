@@ -71,7 +71,7 @@ try {
       port: Number(port),
       hostname: "0.0.0.0",
     },
-    (info, server) => {
+    (info) => {
       // On initialise le serveur WebSocket avec l'objet HTTP natif
       io.listen(3003); // utilise un autre port (par exemple 3001)
       setupSocketHandlers(io);

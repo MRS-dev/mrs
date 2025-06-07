@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
         </Form>
         {/* <Button
               className="w-full my-4"
-              variant="primary"
+              variant="default"
               type="button"
               size="lg"
               onClick={() => createDoctorMutation.mutate()}
