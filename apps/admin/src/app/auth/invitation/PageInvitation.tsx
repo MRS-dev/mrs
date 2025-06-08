@@ -42,7 +42,7 @@ const InvitationPage: React.FC = () => {
   });
   const acceptInvitationMutation = useAcceptInvitation({
     onSuccess: () => {
-      router.push(ROUTES.mfaSetup);
+      router.push(ROUTES.login);
     },
   });
   const onSubmit = (data: AcceptInvitationFormInputs) => {

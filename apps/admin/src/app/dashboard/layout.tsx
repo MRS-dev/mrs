@@ -10,6 +10,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const user = useUser();
+  console.log("user in layout", user);
   const router = useRouter();
   useEffect(() => {
     const currentUser = user.data?.user;

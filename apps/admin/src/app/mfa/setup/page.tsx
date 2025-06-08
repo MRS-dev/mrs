@@ -8,14 +8,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import InputPassword from "@/components/mrs/MrsInputPassword";
 import { useEnable2fa } from "@/queries/2fma/useEnable2fa";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/queries/queryKeys";
 
 const MfaSetupPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [password, setPassword] = useState("");
 
   const enable2faMutation = useEnable2fa({
     onSuccess: () => {
       router.push(ROUTES.mfaVerify);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
     },
   });
 
