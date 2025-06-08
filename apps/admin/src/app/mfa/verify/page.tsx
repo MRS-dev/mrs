@@ -16,8 +16,8 @@ const MfaVerifyPage: React.FC = () => {
 
   const verifyOtpMutation = useVerifyOtp({
     onSuccess: () => {
-      router.push(ROUTES.home);
       queryClient.invalidateQueries({ queryKey: queryKeys.user() });
+      router.push(ROUTES.home);
     },
   });
 

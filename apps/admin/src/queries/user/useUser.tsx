@@ -7,7 +7,9 @@ export const useUser = () => {
   return useQuery({
     queryKey: queryKeys.user(),
     queryFn: async () => {
-      return await authClient.getSession();
+      const response = await authClient.getSession();
+      console.log("response", response);
+      return response;
     },
   });
 };
