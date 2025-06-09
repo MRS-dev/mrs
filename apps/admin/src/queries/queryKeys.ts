@@ -27,7 +27,11 @@ export const queryKeys = {
     workoutTemplateId,
   ],
   chats: () => ["chats"],
+
   chat: (chatId: string) => ["chats", chatId],
   messages: (chatId: string) => ["messages", chatId],
   message: (messageId: string) => ["messages", messageId],
+  ads: (params?: { page?: number; limit?: number }) => ["ads", params || {}],
+  ad: (id: string) => ["ads", id],
+  adStats: (adId: string) => ["ad-stats", adId],
 };

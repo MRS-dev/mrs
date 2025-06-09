@@ -1,37 +1,33 @@
 import { authClient } from "@/lib/authClient";
-import { useMutation } from "@tanstack/react-query";
-import { client } from "../../../lib/apiClient";
 import { ROUTES } from "@/routes";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-export const useSignIn = (props?: { onSuccess?: () => void }) => {
+export const useSignIn = () => {
   const router = useRouter();
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       try {
-        await authClient.signIn.email(data);
-        const mfaStatusResponse = await client.api.user.mfa.status.$get();
-        console.log("mfaStatus", mfaStatusResponse);
-        if (mfaStatusResponse.status === 401) {
-          throw new Error("2FA is not enabled");
+        const response = await authClient.signIn.email(data, {
+          async onSuccess(context) {
+            if (context.data.twoFactorRedirect) {
+              await authClient.twoFactor.sendOtp();
+              router.push(ROUTES.mfaVerify);
+            } else {
+              router.push(ROUTES.mfaSetup);
+            }
+          },
+        });
+        if (response.error) {
+          throw new Error("Error while login");
         }
-
-        const mfaStatus = await mfaStatusResponse.json();
-        if (mfaStatus.is2faEnabled === null) {
-          router.push(ROUTES.mfaSetup);
-        } else if (mfaStatus.is2faEnabled === true) {
-          await authClient.twoFactor.sendOtp();
-          router.push(ROUTES.mfaVerify);
-        }
+        return response;
       } catch (err) {
         throw err;
       }
     },
     onError: (error) => {
       console.log("error", error);
-    },
-    onSuccess: () => {
-      props?.onSuccess?.();
     },
   });
 };

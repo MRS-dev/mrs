@@ -31,7 +31,7 @@ const messageSchema = z.object({
 
 export default function Chats() {
   const userQuery = useUser();
-  const userId = userQuery.data?.user?.id || "";
+  const userId = userQuery.data?.data?.user?.id || "";
   const queryClient = useQueryClient();
   const [selectedChat, setSelectedChat] = useState<string>("");
   const createChatModal = useModal();

@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes";
 import { Input } from "@/components/ui/input";
 import { useVerifyOtp } from "@/queries/2fma/useVerifyOtp";
+import { queryKeys } from "@/queries/queryKeys";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MfaVerifyPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [otpCode, setOtpCode] = useState("");
 
   const verifyOtpMutation = useVerifyOtp({
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
       router.push(ROUTES.home);
     },
   });

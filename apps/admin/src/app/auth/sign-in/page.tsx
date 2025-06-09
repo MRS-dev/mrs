@@ -15,8 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSignIn } from "@/queries/auth/useSignIn";
 import InputPassword from "@/components/mrs/MrsInputPassword";
-import { queryKeys } from "@/queries/queryKeys";
-import { useQueryClient } from "@tanstack/react-query";
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -25,7 +23,6 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
-  const queryClient = useQueryClient();
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -34,11 +31,7 @@ const LoginPage: React.FC = () => {
     },
   });
 
-  const signInMutation = useSignIn({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
-    },
-  });
+  const signInMutation = useSignIn();
   const onSubmit = (data: LoginFormInputs) => {
     console.log("LOGON", data);
     signInMutation.mutate(data, {

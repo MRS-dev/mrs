@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Shield,
   Smile,
-  User,
   UserPlus,
   Users,
   Waypoints,
@@ -165,8 +164,8 @@ const SidebarFooter = () => {
   const signOut = useSignOut({
     onSuccess: () => router.push(ROUTES.login),
   });
-  const displayName = data?.user?.name + " " + data?.user?.lastName;
-  const email = data?.user?.email;
+  const displayName = data?.data?.user?.name + " " + data?.data?.user?.lastName;
+  const email = data?.data?.user?.email;
   return (
     <div className="flex flex-col mb-3">
       <DropdownMenu>
@@ -183,7 +182,7 @@ const SidebarFooter = () => {
               size={40}
               className="size-10"
               displayName={displayName}
-              src={data?.user?.image || ""}
+              src={data?.data?.user?.image || ""}
               alt={""}
             />
             <div
@@ -214,7 +213,7 @@ const SidebarFooter = () => {
                 size={32}
                 className="size-8"
                 displayName={displayName}
-                src={data?.user?.image || ""}
+                src={data?.data?.user?.image || ""}
                 alt={""}
               />
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -223,13 +222,6 @@ const SidebarFooter = () => {
               </div>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="rounded-md cursor-pointer">
-            <Link href={ROUTES.me}>
-              <User className="size-4" />
-              Mon compte
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => signOut.mutate()}

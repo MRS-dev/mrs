@@ -12,7 +12,7 @@ export default function DashboardLayout({
   const user = useUser();
   const router = useRouter();
   useEffect(() => {
-    const currentUser = user.data?.user;
+    const currentUser = user.data?.data?.user;
     if (currentUser && !currentUser?.twoFactorEnabled) {
       router.push(ROUTES.mfaSetup);
     }
