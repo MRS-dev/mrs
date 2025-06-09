@@ -46,7 +46,6 @@ export const auth = betterAuth({
     twoFactor({
       otpOptions: {
         async sendOTP({ user, otp }, request) {
-          console.log("sendOTP", user, otp, request);
           await sendMfaCodeEmail({
             email: user.email,
             code: otp,
