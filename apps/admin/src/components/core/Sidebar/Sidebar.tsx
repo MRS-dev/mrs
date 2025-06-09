@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Shield,
   Smile,
-  User,
   UserPlus,
   Users,
   Waypoints,
@@ -223,13 +222,6 @@ const SidebarFooter = () => {
               </div>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild className="rounded-md cursor-pointer">
-            <Link href={ROUTES.me}>
-              <User className="size-4" />
-              Mon compte
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => signOut.mutate()}

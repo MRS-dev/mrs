@@ -29,6 +29,8 @@ import adminActivitiesRoutes from "./routes/adminActivities";
 
 import { setupSocketHandlers, io } from "./socket";
 import userRoutes from "./routes/user";
+import adminAdEventsRoutes from "./routes/adminAdsEvents";
+import adminAdsRoutes from "./routes/adminAds";
 
 const app = new Hono<HonoType>()
   .use(
@@ -59,6 +61,8 @@ const app = new Hono<HonoType>()
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
   .route("/", adminActivitiesRoutes)
+  .route("/", adminAdEventsRoutes)
+  .route("/", adminAdsRoutes)
   .route("/", userRoutes)
   .get("/health", (c) => c.text("OK"));
 
