@@ -8,7 +8,6 @@ export const useUser = () => {
     queryKey: queryKeys.user(),
     queryFn: async () => {
       const response = await authClient.getSession();
-      console.log("response", response);
       return response;
     },
   });

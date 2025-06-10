@@ -7,8 +7,6 @@ export const useSignIn = (props?: { onSuccess?: () => void }) => {
       try {
         const response = await authClient.signIn.email(data);
         const otpResponse = await authClient.twoFactor.sendOtp();
-        console.log("response", response);
-        console.log("otpResponse", otpResponse);
         if (response.error) {
           throw new Error("Error while login");
         }
