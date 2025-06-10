@@ -6,7 +6,7 @@ export const useSignIn = (props?: { onSuccess?: () => void }) => {
     mutationFn: async (data: { email: string; password: string }) => {
       try {
         const response = await authClient.signIn.email(data);
-        const otpResponse = await authClient.twoFactor.sendOtp();
+        await authClient.twoFactor.sendOtp();
         if (response.error) {
           throw new Error("Error while login");
         }
