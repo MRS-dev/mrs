@@ -37,7 +37,6 @@ const ChangePasswordForm: React.FC = () => {
 
   const changePassword = useChangePassword();
   const onSubmit = (data: ChangePasswordFormInputs) => {
-    console.log(data);
     changePassword.mutate(data);
     // Logique pour changer le mot de passe
   };

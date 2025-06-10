@@ -9,7 +9,6 @@ export const useModal = (params?: UseModalParams) => {
     setOpen(false);
   };
   const onOpen = () => {
-    console.log("onOpen", open);
     setOpen(true);
   };
 

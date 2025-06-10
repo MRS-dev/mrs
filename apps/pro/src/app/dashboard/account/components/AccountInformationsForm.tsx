@@ -25,7 +25,6 @@ const accountInformationsSchema = z.object({
 type AccountInformationFormInputs = z.infer<typeof accountInformationsSchema>;
 const AccountInformationForm: React.FC = () => {
   const user = useUser();
-  console.log("user?.data: ", user?.data);
   const form = useForm<AccountInformationFormInputs>({
     resolver: zodResolver(accountInformationsSchema),
     defaultValues: {

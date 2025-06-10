@@ -20,7 +20,6 @@ export default function Pros() {
   }, [prosQuery.data]);
 
   const inviteProModal = useModal();
-  console.log("INVITE PRO MODAL", inviteProModal.open);
   return (
     <>
       <SidebarLayout
@@ -51,7 +50,6 @@ export default function Pros() {
                   <Button
                     onClick={() => {
                       inviteProModal.onOpen();
-                      console.log("inviteProModal");
                     }}
                   >
                     <span>Inviter</span>

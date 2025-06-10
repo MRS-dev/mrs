@@ -145,7 +145,7 @@ export const useExercisesEditor = ({
       variant: "in function",
       exerciseId,
     });
-    console.log("1111");
+
     if (exercises?.find((item) => item.exerciseId === exerciseId)) {
       console.log({
         title: "Cet exercice est déjà dans le programme",
@@ -154,7 +154,6 @@ export const useExercisesEditor = ({
       return;
     }
 
-    console.log("2222222");
     console.log({
       title: "Ajout d'un exercice",
       variant: "success",
@@ -164,8 +163,6 @@ export const useExercisesEditor = ({
       ...exercises,
       { exerciseId, series: 1, executionTime: 0, restTime: 0, repetitions: 0 },
     ]);
-
-    console.log("3333333");
   };
 
   function changeExercise(

@@ -14,7 +14,6 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const isInformations = pathname === ROUTES.account;
   const isBilling = pathname === ROUTES.accountBilling;
-  console.log(pathname);
   return (
     <SidebarLayout
       Header={

@@ -78,7 +78,6 @@ export const registrationRequestSchema = z.object({
 const registrationRequestsRoutes = new Hono<HonoType>()
   .basePath("/registration-requests")
   .put("/", zValidator("form", registrationRequestSchema), async (c) => {
-    console.log("FORM", c.req);
     const {
       firstName,
       lastName,
@@ -90,7 +89,6 @@ const registrationRequestsRoutes = new Hono<HonoType>()
       cni,
       healthCard,
     } = c.req.valid("form");
-    console.log("FORM", c.req);
 
     const registrationRequest = await db.insert(registrationRequests).values({
       firstName: firstName,

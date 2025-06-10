@@ -29,7 +29,6 @@ const inviteProSchema = z
 type InviteProFormInputs = z.infer<typeof inviteProSchema>;
 
 export const InviteProModal = (props: ModalProps) => {
-  console.log("INVITE PRO MODAL", props);
   const form = useForm<InviteProFormInputs>({
     resolver: zodResolver(inviteProSchema),
   });

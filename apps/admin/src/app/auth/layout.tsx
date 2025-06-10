@@ -11,7 +11,6 @@ export default function AuthLayout({
 }) {
   const userQuery = useUser();
   useEffect(() => {
-    console.log("USER DATA => ", userQuery.data);
     if (userQuery.data?.data?.user) {
       redirect(ROUTES.home);
     }

@@ -33,7 +33,6 @@ const LoginPage: React.FC = () => {
 
   const signInMutation = useSignIn();
   const onSubmit = (data: LoginFormInputs) => {
-    console.log("LOGON", data);
     signInMutation.mutate(data);
   };
   return (

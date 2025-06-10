@@ -28,7 +28,6 @@ const adminsRoutes = new Hono<HonoType>()
       })
       .from(user)
       .where(eq(user.role, "admin"));
-    console.log("ADMINS", admins);
     return c.json(admins);
   })
   .post(
@@ -53,7 +52,6 @@ const adminsRoutes = new Hono<HonoType>()
         .from(user)
         .where(eq(user.email, email));
 
-      console.log("existingUser", existingUser);
       if (existingUser?.length > 0) {
         return c.json({ error: "User already exists" }, 400);
       }
