@@ -94,8 +94,6 @@ const patientsRoutes = new Hono<HonoType>()
   .get("/me", async (c) => {
     const user = c.get("user");
     const userId = user?.id || "";
-    console.log("::::::::::::::::::::::::::::::::userId", userId);
-    console.log("--------------------------------user", user);
     const [patient] = await db
       .select()
       .from(patients)

@@ -41,20 +41,19 @@ const invitationsRoutes = new Hono<HonoType>()
       if (!invitation) {
         return c.json({ error: "Invitation not found" }, 404);
       }
-      console.log("1");
+
       if (invitation.acceptedAt) {
         return c.json({ error: "Invitation already accepted" }, 400);
       }
-      console.log("2");
+
       if (invitation.token !== token) {
         return c.json({ error: "Invalid token" }, 401);
       }
-      console.log("3");
+
       if (email !== invitation.email) {
         return c.json({ error: "Wrong email" }, 401);
       }
 
-      console.log("4");
       const admin = await auth.api.createUser({
         body: {
           email,
@@ -67,7 +66,6 @@ const invitationsRoutes = new Hono<HonoType>()
         },
       });
 
-      console.log("ADMIN; ", admin);
       await db
         .update(invitations)
         .set({ acceptedAt: new Date() })

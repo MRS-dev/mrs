@@ -78,7 +78,7 @@ export default function PatientWorkoutSessions() {
       confirmDeleteModal.onClose();
     },
     onError: (error) => {
-      console.log("MATTHEW_ERROR", error);
+      console.log("error", error);
     },
   });
   const confirmDeleteModal = useModal();

@@ -374,7 +374,6 @@ const EmergencyContactStep = () => {
 const NewPatient: React.FC = () => {
   const createPatient = useCreatePatient();
   const onSubmit = (json: CreatePatientSchema) => {
-    console.log("JSON---->", json);
     createPatient.mutate({
       json,
     });

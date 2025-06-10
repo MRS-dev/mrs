@@ -49,7 +49,7 @@ export const SessionCard = ({
       // });
     },
     onError: (error) => {
-      console.log("MATTHEW_ERROR", error);
+      console.log("ERROR", error);
       // toast({
       //   title: "Erreur",
       //   description: "La séance n'a pas été supprimée",
@@ -82,7 +82,6 @@ export const SessionCard = ({
             <SimpleCheckbox
               checked={selected}
               onClick={(e) => {
-                console.log("click");
                 e.stopPropagation();
                 onSelect();
               }}

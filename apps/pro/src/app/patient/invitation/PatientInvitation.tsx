@@ -43,7 +43,6 @@ const InvitationPage: React.FC = () => {
     },
   });
   const onSubmit = (data: AcceptInvitationFormInputs) => {
-    console.log("data", data, token);
     acceptInvitationMutation.mutate({ json: { ...data, token: token! } });
   };
   return (

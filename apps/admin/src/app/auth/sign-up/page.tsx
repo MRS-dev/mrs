@@ -33,7 +33,6 @@ const SignUpPage: React.FC = () => {
 
   const signUpMutation = useSignUp();
   const onSubmit = (data: SignUpFormInputs) => {
-    console.log("LOGON", data);
     signUpMutation.mutate(data);
   };
   return (

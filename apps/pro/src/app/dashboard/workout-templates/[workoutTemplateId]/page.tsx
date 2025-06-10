@@ -62,7 +62,6 @@ const WorkoutTemplate: React.FC = () => {
         variant: "success",
         exercises,
       });
-      console.log("444444");
       onChange("program", { exercises });
     },
   });

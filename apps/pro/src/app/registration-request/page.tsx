@@ -59,7 +59,6 @@ const RegistrationRequest: React.FC = () => {
   });
 
   const onSubmit = async (form: RegistrationRequestFormInputs) => {
-    console.log("JE TENTE");
     createRegistrationRequest.mutate({
       form,
     });

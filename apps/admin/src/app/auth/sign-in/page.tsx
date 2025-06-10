@@ -33,17 +33,7 @@ const LoginPage: React.FC = () => {
 
   const signInMutation = useSignIn();
   const onSubmit = (data: LoginFormInputs) => {
-    console.log("LOGON", data);
-    signInMutation.mutate(data, {
-      onSuccess: (res) => {
-        if (process.env.NODE_ENV !== "production") {
-          console.log("[LOGIN_SUCCESS]", res);
-        }
-      },
-      onError: (err) => {
-        console.error("[LOGIN_ERROR]", err);
-      },
-    });
+    signInMutation.mutate(data);
   };
   return (
     <div className="flex  w-full flex-col items-center">
