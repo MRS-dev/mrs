@@ -9,12 +9,15 @@ import {
   Search,
   MousePointerClick,
   EyeIcon,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { useModal } from "@/hooks/useModale";
 import GridLayout from "@/components/mrs/GridLayout";
 import { useAds } from "@/queries/ads/useAds";
+import { useToggleAdEnabled } from "@/queries/ads/useAd";
 import { CreateAdModal } from "@/components/modals/CreateAdModal";
 import { ViewAdModal } from "@/components/modals/ViewAdModal";
 
@@ -23,6 +26,7 @@ const Ads: React.FC = () => {
   const createAdModal = useModal();
   const viewAdModal = useModal();
   const adsQuery = useAds();
+  const toggleAdEnabled = useToggleAdEnabled();
 
   const clickOnAd = (ad: { id: string }) => {
     setSelectedAdId(ad.id);
@@ -37,6 +41,11 @@ const Ads: React.FC = () => {
   const ads = useMemo(() => {
     return adsQuery.data?.pages.flatMap((page) => page.items) ?? [];
   }, [adsQuery.data]);
+
+  const handleCloseModal = () => {
+    setSelectedAdId("");
+    viewAdModal.onClose();
+  };
 
   return (
     <>
@@ -72,7 +81,7 @@ const Ads: React.FC = () => {
               <div
                 key={ad.id}
                 onClick={() => clickOnAd(ad)}
-                className="bg-background rounded-xl border shadow-sm p-4 flex flex-row items-start gap-2 hover:shadow-md cursor-pointer w-full overflow-hidden"
+                className="bg-background rounded-xl border shadow-sm p-4 flex flex-row items-start gap-2 hover:shadow-md cursor-pointer w-full overflow-hidden group"
               >
                 <div
                   className="w-14 min-w-14 aspect-square rounded-xl bg-muted"
@@ -87,7 +96,9 @@ const Ads: React.FC = () => {
                     <h3 className="text-base font-semibold truncate">
                       {ad.title}
                     </h3>
-                    <div className="h-0 w-10 flex items-center justify-center">
+                    <div className="flex items-center gap-2">
+                      {/* Activer/Désactiver */}
+
                       <Button variant="ghost" size="icon">
                         <ChevronRight className="w-4 h-4" />
                       </Button>
@@ -105,6 +116,26 @@ const Ads: React.FC = () => {
                       {ad.clicks}
                       <MousePointerClick className="w-4 h-4" />
                     </div>
+                    <Button
+                      size="lg"
+                      variant="ghost"
+                      className="transition-colors p-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleAdEnabled.mutate({
+                          id: ad.id,
+                          enable: !ad.enable,
+                        });
+                      }}
+                      disabled={toggleAdEnabled.isPending}
+                      title={ad.enable ? "Désactiver" : "Activer"}
+                    >
+                      {ad.enable ? (
+                        <ToggleRight className="w-30 h-30 text-green-500" />
+                      ) : (
+                        <ToggleLeft className="w-30 h-30 text-muted-foreground" />
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -119,7 +150,11 @@ const Ads: React.FC = () => {
       </SidebarLayout>
 
       <CreateAdModal {...createAdModal} />
-      <ViewAdModal {...viewAdModal} adId={selectedAdId} />
+      <ViewAdModal
+        {...viewAdModal}
+        adId={selectedAdId}
+        onClose={handleCloseModal}
+      />
     </>
   );
 };

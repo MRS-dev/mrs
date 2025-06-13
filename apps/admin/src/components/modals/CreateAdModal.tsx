@@ -19,6 +19,7 @@ import { MrsModal, MrsModalContent, MrsModalTitle } from "../mrs/MrsModal";
 //import { useUpdateAd } from "@/queries/ads/useUpdateAd";
 import { useCreateAd } from "@/queries/ads/useCreateAd";
 import { queryKeys } from "@/queries/queryKeys";
+import { useUser } from "@/queries/user/useUser";
 
 interface CreateAdModalProps extends ModalProps {
   open: boolean;
@@ -32,13 +33,16 @@ const createAdSchema = z.object({
     .min(10, "La description doit contenir au moins 10 caractères"),
   url: z.string(),
   enable: z.boolean().optional(),
-  photoUrl: z.any().optional(),
+  photoUrl: z.string().min(1),
   authorId: z.boolean().optional(),
 });
 
 export type CreateAdFormInputs = z.infer<typeof createAdSchema>;
 
 export const CreateAdModal = (props: CreateAdModalProps) => {
+  const userQuery = useUser();
+  const userId = userQuery.data?.data?.user?.id || "";
+
   const queryClient = useQueryClient();
   //const { toast } = useToast();
   const form = useForm<CreateAdFormInputs>({
@@ -74,9 +78,15 @@ export const CreateAdModal = (props: CreateAdModalProps) => {
     },
   });
 
-  // const onSubmit = async (json: z.infer<typeof createAdSchema>) => {
-  //   createAdMutation.mutate({ json });
-  // };
+  const handleSubmitAd = (e: React.FormEvent) => {
+    form.handleSubmit((data) => {
+      const ad = { ...data, authorId: userId, photoUrl: data.photoUrl ?? "" };
+      createAdMutation.mutate({
+        json: ad,
+      });
+    })(e);
+  };
+
   return (
     <>
       <MrsModal {...props}>
@@ -88,11 +98,7 @@ export const CreateAdModal = (props: CreateAdModalProps) => {
             </Button>
           </div>
           <Form {...form}>
-            <form
-              onSubmit={() =>
-                console.log("ADs")
-              } /*form.handleSubmit(onSubmit)}*/
-            >
+            <form onSubmit={handleSubmitAd}>
               <div className="flex flex-col gap-4 p-4">
                 <FormField
                   control={form.control}

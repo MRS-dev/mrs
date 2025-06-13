@@ -12,7 +12,7 @@ import {
   Users,
   Waypoints,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useSidebarStore from "./Sidebar.store";
 import {
   Tooltip,
@@ -29,13 +29,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/queries/user/useUser";
 import { useSignOut } from "@/queries/auth/useSignOut";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
 import Image from "next/image";
+import { useEnabledAd } from "@/queries/ads/useEnabledAd";
+import { useLogAdEvent } from "@/queries/ads/useLogAdEvent";
 const SIDEBAR_MAX_WIDTH = "max-w-72";
 const SidebarHeader = () => {
   const { isOpen } = useSidebarStore();
@@ -116,40 +117,22 @@ const SidebarLink = ({ to, Icon, label }: SidebarLinkProps) => {
 };
 const SidebarContent = () => {
   const { isOpen } = useSidebarStore();
-  const [ad, setAd] = useState<null | {
-    _id: string;
-    photoUrl: string;
-    url: string;
-  }>(null);
+  const adQuery = useEnabledAd();
+  const ad = adQuery.data?.data; // data?.data car ton endpoint renvoie { data: { ... } }
 
-  const adQuery = useQuery({
-    queryKey: ["ad-enable"],
-    queryFn: () =>
-      Promise.resolve({
-        _id: "1",
-        photoUrl: "/logo.png",
-        url: "https://www.google.com",
-      }), //getEnableAd(),
-    enabled: true,
-  });
+  const logAdEvent = useLogAdEvent();
 
   useEffect(() => {
-    if (adQuery.data) {
-      setAd(adQuery.data);
-      logAdEvent("view", adQuery.data._id);
+    if (ad?.id) {
+      logAdEvent.mutate({ adId: ad.id, type: "view" });
     }
-  }, [adQuery.data]);
+  }, [ad?.id]);
 
   const handleClick = () => {
     if (ad?.url) {
       window.open(ad.url, "_blank", "noopener,noreferrer");
-      logAdEvent("click", ad?._id);
+      logAdEvent.mutate({ adId: ad.id, type: "click" });
     }
-  };
-
-  const logAdEvent = (type: "view" | "click", adId: string) => {
-    // createAdEvent({ type, adId });
-    console.log("logAdEvent", type, adId);
   };
 
   return (

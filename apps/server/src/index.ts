@@ -29,8 +29,10 @@ import adminActivitiesRoutes from "./routes/adminActivities";
 
 import { setupSocketHandlers, io } from "./socket";
 import userRoutes from "./routes/user";
-import adminAdEventsRoutes from "./routes/adminAdsEvents";
 import adminAdsRoutes from "./routes/adminAds";
+import adsRoutes from "./routes/ads";
+import adEventsRoutes from "./routes/adEvents";
+import adminAdEventsRoutes from "./routes/adminAdEvents";
 
 const app = new Hono<HonoType>()
   .use(
@@ -41,7 +43,7 @@ const app = new Hono<HonoType>()
         process.env.PRO_FRONTEND_URL!,
         process.env.PATIENT_FRONTEND_URL!,
       ],
-      allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+      allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
       allowHeaders: ["Content-Type", "Authorization"],
       credentials: true,
     })
@@ -61,8 +63,10 @@ const app = new Hono<HonoType>()
   .route("/", adminExercisesRoutes)
   .route("/", adminProsRoutes)
   .route("/", adminActivitiesRoutes)
-  .route("/", adminAdEventsRoutes)
   .route("/", adminAdsRoutes)
+  .route("/", adsRoutes)
+  .route("/", adEventsRoutes)
+  .route("/", adminAdEventsRoutes)
   .route("/", userRoutes)
   .get("/health", (c) => c.text("OK"));
 

@@ -28,4 +28,5 @@ export const queryKeys = {
   chats: () => ["chats"],
   chat: (chatId: string) => ["chat", chatId],
   messages: (chatId: string) => ["messages", chatId],
+  enabledAd: () => ["enabledAd"],
 };
