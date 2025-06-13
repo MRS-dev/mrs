@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import {
   Chart,
   CategoryScale,
@@ -20,9 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { ModalProps } from "@/hooks/useModale";
-import { useAdStatsQuery } from "@/queries/ads/useAdStats";
+import { AdEventStat, useAdEventsStats } from "@/queries/ads/useAdEvents"; // <-- nouveau hook
 
-// Register Chart.js modules
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface ViewAdModalProps extends ModalProps {
@@ -30,27 +29,51 @@ interface ViewAdModalProps extends ModalProps {
 }
 
 export const ViewAdModal = (props: ViewAdModalProps) => {
-  const [chartData] = useState<ChartData<"bar", number[], string> | null>(null);
-  const statsQuery = useAdStatsQuery(props.adId);
+  const statsQuery = useAdEventsStats({ adId: props.adId }); // ← hook
 
-  // useEffect(() => {
-  //   if (statsQuery.data) {
-  //     const data = statsQuery.data;
-  //     const labels = data.map((entry) => entry._id);
-  //     const clicks = data.map((entry) => entry.clicks);
-  //     const views = data.map((entry) => entry.views);
+  // Format pour Chart.js (groupé par date)
+  const chartData = useMemo(() => {
+    if (!statsQuery.data) return null;
 
-  //     const formattedData: ChartData<"bar", number[], string> = {
-  //       labels,
-  //       datasets: [
-  //         { label: "Clics", data: clicks },
-  //         { label: "Vues", data: views },
-  //       ],
-  //     };
+    const adEventStats = statsQuery.data as AdEventStat[];
 
-  //     setChartData(formattedData);
-  //   }
-  // }, [statsQuery.data]);
+    // 1. Extraire la date (YYYY-MM-DD) de chaque événement
+    const allDates = adEventStats.map((s) => s.createdAt.slice(0, 10));
+    const dates = Array.from(new Set(allDates)).sort();
+
+    // 2. Initialiser les compteurs par date
+    const viewsByDate: Record<string, number> = {};
+    const clicksByDate: Record<string, number> = {};
+
+    dates.forEach((date) => {
+      viewsByDate[date] = 0;
+      clicksByDate[date] = 0;
+    });
+
+    // 3. Compter les events
+    adEventStats.forEach((s) => {
+      const date = s.createdAt.slice(0, 10);
+      if (s.type === "view") viewsByDate[date] += 1;
+      if (s.type === "click") clicksByDate[date] += 1;
+    });
+
+    // 4. Structure pour Chart.js
+    return {
+      labels: dates,
+      datasets: [
+        {
+          label: "Vues",
+          data: dates.map((d) => viewsByDate[d] || 0),
+          backgroundColor: "rgba(54, 162, 235, 0.6)",
+        },
+        {
+          label: "Clics",
+          data: dates.map((d) => clicksByDate[d] || 0),
+          backgroundColor: "rgba(168, 109, 223, 0.6)",
+        },
+      ],
+    } as ChartData<"bar", number[], string>;
+  }, [statsQuery.data]);
 
   return (
     <MrsModal {...props}>
@@ -69,6 +92,9 @@ export const ViewAdModal = (props: ViewAdModalProps) => {
             <p className="text-red-500">Erreur : {statsQuery.error?.message}</p>
           )}
           {chartData && <Bar data={chartData} />}
+          {!chartData && !statsQuery.isLoading && (
+            <p>Aucune donnée à afficher.</p>
+          )}
         </div>
       </MrsModalContent>
     </MrsModal>

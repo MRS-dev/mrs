@@ -9,7 +9,7 @@ export const useAds = () => {
       // on ouvre un bloc pour pouvoir déclarer des const
       const response = await client.api.admins.ads.$get({
         query: {
-          page: pageParam.toString(),
+          page: pageParam ? String(pageParam) : "1",
           limit: "30",
         },
       });
@@ -21,7 +21,7 @@ export const useAds = () => {
       return response.json();
     },
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.pageInfo.hasNextPage ? pages.length + 1 : undefined;
+      return lastPage.pageInfo.hasNextPage ? pages.length + 1 : 1;
     },
     initialPageParam: 1,
   });

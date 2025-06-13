@@ -9,7 +9,7 @@ export const adEvents = pgTable("ad_events", {
   adId: uuid("ad_id")
     .notNull()
     .references(() => ads.id),
-  eventType: text("event_type").notNull(), // ex: 'view', 'click'
+  type: text("type").notNull(), // ex: 'view', 'click'
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",

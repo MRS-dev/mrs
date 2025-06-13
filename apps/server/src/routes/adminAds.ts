@@ -5,6 +5,8 @@ import { zValidator } from "@hono/zod-validator";
 import { eq, sql } from "drizzle-orm";
 import { roles } from "../lib/roles";
 import { ads } from "../schemas/ads";
+import { z } from "zod";
+
 import {
   getQueryPagination,
   paginationSchema,
@@ -15,6 +17,10 @@ import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 // Zod schemas for ad insertion and update
 export const adInsertSchema = createInsertSchema(ads);
 export const adUpdateSchema = createUpdateSchema(ads);
+
+const adEnableSchema = z.object({
+  enable: z.boolean(),
+});
 
 const adminAdsRoutes = new Hono<HonoType>()
   .basePath("/admins/ads")
@@ -60,6 +66,23 @@ const adminAdsRoutes = new Hono<HonoType>()
     const updateResult = await db.update(ads).set(data).where(eq(ads.id, id));
 
     // Check row count
+    if (updateResult.rowCount === 0) {
+      return c.text("Ad not found", 404);
+    }
+
+    const updated = await db.select().from(ads).where(eq(ads.id, id));
+    return c.json(updated[0]);
+  })
+
+  .patch("/:id", zValidator("json", adEnableSchema), async (c) => {
+    const id = c.req.param("id");
+    const { enable } = c.req.valid("json");
+
+    const updateResult = await db
+      .update(ads)
+      .set({ enable })
+      .where(eq(ads.id, id));
+
     if (updateResult.rowCount === 0) {
       return c.text("Ad not found", 404);
     }

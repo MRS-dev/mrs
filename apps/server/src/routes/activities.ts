@@ -11,7 +11,6 @@ import {
   toPaginatedResponse,
 } from "../lib/utils/paginations";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
-import { exercises } from "../schemas/exercises";
 export const activityInsertSchema = createInsertSchema(activities);
 export const activityUpdateSchema = createUpdateSchema(activities);
 

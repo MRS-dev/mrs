@@ -40,6 +40,8 @@ export const ROUTES_DEF = {
   accountInformations: "/dashboard/account/informations",
   accountBilling: "/dashboard/account/billing",
   verification: "/dashboard/verification",
+  ads: "/dashboard/ads",
+  adEvents: "/dashboard/adEvents",
 };
 
 export const ROUTES = {
