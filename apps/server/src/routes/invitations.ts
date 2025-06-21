@@ -38,6 +38,7 @@ const invitationsRoutes = new Hono<HonoType>()
         })
         .from(invitations)
         .where(and(eq(invitations.email, email), eq(invitations.token, token)));
+
       if (!invitation) {
         return c.json({ error: "Invitation not found" }, 404);
       }
@@ -54,23 +55,61 @@ const invitationsRoutes = new Hono<HonoType>()
         return c.json({ error: "Wrong email" }, 401);
       }
 
-      const admin = await auth.api.createUser({
-        body: {
-          email,
-          password,
-          role: invitation.role as Roles,
-          name: firstName,
-          data: {
-            lastName,
+      try {
+        // 1. Créer l'utilisateur admin
+        const admin = await auth.api.createUser({
+          body: {
+            email,
+            password,
+            role: invitation.role as Roles,
+            name: firstName,
+            data: {
+              lastName,
+            },
           },
-        },
-      });
+        });
 
-      await db
-        .update(invitations)
-        .set({ acceptedAt: new Date() })
-        .where(eq(invitations.email, email));
-      return c.json(admin);
+        // 2. Si c'est un admin, activer automatiquement le 2FA
+        if (invitation.role === "admin") {
+          console.log("CREATING USER");
+          // Créer une session temporaire pour l'utilisateur
+          const session = await auth.api.signInEmail({
+            body: {
+              email,
+              password,
+            },
+            asResponse: true,
+          });
+          console.log("CREATED USER", session.headers);
+          console.log("ENABLE TWO FACTOR");
+          // Activer le 2FA en passant les headers bruts
+          const twoFactorData = await auth.api.enableTwoFactor({
+            body: {
+              password,
+            },
+            headers: {
+              cookie: session.headers?.get("set-cookie") || "",
+            },
+          });
+          console.log("ENABLED TWO FACTOR", twoFactorData);
+
+          // Marquer l'invitation comme acceptée
+          await db
+            .update(invitations)
+            .set({ acceptedAt: new Date() })
+            .where(eq(invitations.email, email));
+
+          console.log("UPDATED INVITATION");
+        }
+
+        return c.json({
+          user: admin,
+          requires2FA: false,
+        });
+      } catch (error) {
+        console.error("Erreur lors de la création de l'admin:", error);
+        return c.json({ error: "Erreur lors de la création du compte" }, 500);
+      }
     }
   )
   .post(
@@ -121,41 +160,66 @@ const invitationsRoutes = new Hono<HonoType>()
         return c.json({ error: "Wrong email" }, 401);
       }
 
-      const { user } = await auth.api.createUser({
-        body: {
-          email,
-          password,
-          role: invitation.role as Roles,
-          name: registrationRequest.firstName,
-          data: {
-            lastName: registrationRequest.lastName,
+      if (invitation.role === "pro") {
+        console.log("CREATING USER");
+        const { user } = await auth.api.createUser({
+          body: {
+            email,
+            password,
+            role: invitation.role as Roles,
+            name: registrationRequest.firstName,
+            data: {
+              lastName: registrationRequest.lastName,
+            },
           },
-        },
-      });
+        });
+        console.log("CREATED USER", user);
+        // Créer une session temporaire pour l'utilisateur
+        const session = await auth.api.signInEmail({
+          body: {
+            email,
+            password,
+          },
+          asResponse: true,
+        });
+        console.log("CREATED USER", session.headers);
+        console.log("ENABLE TWO FACTOR");
+        // Activer le 2FA en passant les headers bruts
+        const twoFactorData = await auth.api.enableTwoFactor({
+          body: {
+            password,
+          },
+          headers: {
+            cookie: session.headers?.get("set-cookie") || "",
+          },
+        });
+        console.log("ENABLED TWO FACTOR", twoFactorData);
+        const { firstName, lastName } = registrationRequest;
 
-      const { firstName, lastName } = registrationRequest;
-
-      await db
-        .update(invitations)
-        .set({ acceptedAt: new Date() })
-        .where(eq(invitations.email, email));
-      await db
-        .insert(chats)
-        .values({
-          participants: [user.id],
-          lastUpdated: new Date(),
-          title: `Support - ${firstName} ${lastName}`,
-        })
-        .returning();
-      await db.insert(pros).values({
-        id: user.id,
-        firstName: registrationRequest.firstName,
-        lastName: registrationRequest.lastName,
-        email: registrationRequest.email,
-        phoneNumber: registrationRequest.phoneNumber,
-      });
-
-      return c.json(user);
+        await db
+          .update(invitations)
+          .set({ acceptedAt: new Date() })
+          .where(eq(invitations.email, email));
+        await db
+          .insert(chats)
+          .values({
+            participants: [user.id],
+            lastUpdated: new Date(),
+            title: `Support - ${firstName} ${lastName}`,
+          })
+          .returning();
+        await db.insert(pros).values({
+          id: user.id,
+          firstName: registrationRequest.firstName,
+          lastName: registrationRequest.lastName,
+          email: registrationRequest.email,
+          phoneNumber: registrationRequest.phoneNumber,
+        });
+        return c.json({
+          user,
+          requires2FA: false,
+        });
+      }
     }
   )
   .post(
