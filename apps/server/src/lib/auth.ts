@@ -48,6 +48,7 @@ export const auth = betterAuth({
       adminRoles: ["admin"], // “admin” reste le super-admin
     }),
     twoFactor({
+      skipVerificationOnEnable: true,
       otpOptions: {
         async sendOTP({ user, otp }, request) {
           await sendMfaCodeEmail({

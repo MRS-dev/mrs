@@ -15,11 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSignIn } from "@/queries/auth/useSignIn";
 import InputPassword from "@/components/mrs/MrsInputPassword";
-import { useRouter } from "next/navigation";
 import { ROUTES } from "@/routes";
-import { queryKeys } from "@/queries/queryKeys";
-import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -28,8 +26,6 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -38,12 +34,7 @@ const LoginPage: React.FC = () => {
     },
   });
 
-  const signInMutation = useSignIn({
-    onSuccess: () => {
-      router.push(ROUTES.mfaVerify);
-      queryClient.invalidateQueries({ queryKey: queryKeys.user });
-    },
-  });
+  const signInMutation = useSignIn();
   const onSubmit = (data: LoginFormInputs) => {
     signInMutation.mutate(data);
   };

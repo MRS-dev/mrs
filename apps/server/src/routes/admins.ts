@@ -108,6 +108,9 @@ const adminsRoutes = new Hono<HonoType>()
       const admin = await auth.api.createUser({
         body: { email, password, name, role: "admin" },
       });
+      await auth.api.signInEmail({
+        body: { email, password },
+      });
       return c.json(admin);
     }
   )
