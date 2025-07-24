@@ -63,7 +63,14 @@ const patientsRoutes = new Hono<HonoType>()
           id: patients.id,
           firstName: patients.firstName,
           lastName: patients.lastName,
+          email: patients.email,
           birthDate: patients.birthDate,
+          phoneNumber: patients.phoneNumber,
+          socialSecurityNumber: patients.socialSecurityNumber,
+          address: patients.address,
+          emergencyContact: patients.emergencyContact,
+          allergies: patients.allergies,
+          status: patients.status,
         })
         .from(patients)
         .leftJoin(
@@ -147,36 +154,86 @@ const patientsRoutes = new Hono<HonoType>()
       return c.json({ error: "User ID is not defined" }, 400);
     }
 
-    const [patient] = await db
-      .insert(patients)
-      .values({
-        ...data,
-        status: "created",
-      })
-      .returning();
-    await db.insert(patientProRelations).values({
-      patientId: patient.id,
-      proId: userId,
-    });
-    const [pro] = await db.select().from(pros).where(eq(pros.id, userId));
-    const res = await db
-      .insert(invitations)
-      .values({
-        email: data.email,
-        invitedBy: c.get("user")?.id,
-        role: "user",
-      })
-      .returning();
-    const token = res[0].token;
-    await sendMail({
-      to: data.email,
-      ...mailTemplate.proInvitePatientEmail({
-        email: data.email,
-        token,
-        proName: `${pro.firstName} ${pro.lastName}`,
-      }),
-    });
-    return c.json(patient);
+    try {
+      // Vérifier si un patient avec cet email existe déjà
+      const existingPatient = await db
+        .select()
+        .from(patients)
+        .where(eq(patients.email, data.email))
+        .limit(1);
+
+      if (existingPatient.length > 0) {
+        return c.json({ error: "Un patient avec cet email existe déjà" }, 400);
+      }
+
+      // Récupérer les infos du pro d'abord
+      const [pro] = await db.select().from(pros).where(eq(pros.id, userId));
+      if (!pro) {
+        return c.json({ error: "Pro not found" }, 404);
+      }
+
+      // Créer le patient
+      const [patient] = await db
+        .insert(patients)
+        .values({
+          ...data,
+          status: "created",
+        })
+        .returning();
+
+      let invitation = null;
+      try {
+        // Créer la relation patient-pro
+        await db.insert(patientProRelations).values({
+          patientId: patient.id,
+          proId: userId,
+        });
+
+        // Créer l'invitation
+        const [createdInvitation] = await db
+          .insert(invitations)
+          .values({
+            email: data.email,
+            invitedBy: userId,
+            role: "user",
+          })
+          .returning();
+        
+        invitation = createdInvitation;
+      } catch (relationError) {
+        // En cas d'erreur, supprimer le patient créé pour maintenir la cohérence
+        console.error("Error creating patient relations:", relationError);
+        try {
+          await db.delete(patients).where(eq(patients.id, patient.id));
+        } catch (cleanupError) {
+          console.error("Failed to cleanup patient:", cleanupError);
+        }
+        throw new Error("Failed to create patient relations");
+      }
+
+      const result = { patient, pro, invitation };
+
+      // Envoyer l'email d'invitation (en dehors de la transaction)
+      try {
+        await sendMail({
+          to: data.email,
+          ...mailTemplate.proInvitePatientEmail({
+            email: data.email,
+            token: result.invitation.token,
+            proName: `${result.pro.firstName} ${result.pro.lastName}`,
+          }),
+        });
+      } catch (emailError) {
+        console.error("Failed to send invitation email:", emailError);
+        // L'email a échoué mais le patient est créé
+        // On pourrait ajouter une notification ou un retry ici
+      }
+
+      return c.json(result.patient);
+    } catch (error) {
+      console.error("Error creating patient:", error);
+      return c.json({ error: "Failed to create patient" }, 500);
+    }
   })
   .put("/:patientId", zValidator("json", updatePatientSchema), async (c) => {
     const user = c.get("user");
@@ -194,6 +251,70 @@ const patientsRoutes = new Hono<HonoType>()
       .where(eq(patients.id, patientId))
       .returning();
     return c.json(patient);
+  })
+  .delete("/:patientId", async (c) => {
+    const user = c.get("user");
+    const userId = user?.id;
+    const { patientId } = c.req.param();
+
+    if (!userId) {
+      return c.json({ error: "User ID is not defined" }, 400);
+    }
+
+    try {
+      // Vérifier que le pro a une relation avec ce patient
+      const relationExists = await db
+        .select()
+        .from(patientProRelations)
+        .where(
+          and(
+            eq(patientProRelations.proId, userId),
+            eq(patientProRelations.patientId, patientId)
+          )
+        )
+        .limit(1);
+
+      if (relationExists.length === 0) {
+        return c.json(
+          { error: "Access denied: No relation with this patient" },
+          403
+        );
+      }
+
+      // Supprimer d'abord les relations
+      await db
+        .delete(patientProRelations)
+        .where(eq(patientProRelations.patientId, patientId));
+
+      // Récupérer l'email du patient pour supprimer les invitations
+      const patientToDelete = await db
+        .select({ email: patients.email })
+        .from(patients)
+        .where(eq(patients.id, patientId))
+        .limit(1);
+
+      if (patientToDelete.length > 0) {
+        // Supprimer les invitations liées
+        await db
+          .delete(invitations)
+          .where(eq(invitations.email, patientToDelete[0].email));
+      }
+
+      // Supprimer le patient
+      const [deletedPatient] = await db
+        .delete(patients)
+        .where(eq(patients.id, patientId))
+        .returning();
+
+      if (!deletedPatient) {
+        return c.json({ error: "Patient not found" }, 404);
+      }
+
+      return c.json({ message: "Patient deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+      return c.json({ error: "Failed to delete patient" }, 500);
+    }
   });
 
 export default patientsRoutes;

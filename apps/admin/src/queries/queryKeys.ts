@@ -39,4 +39,9 @@ export const queryKeys = {
     from,
     to,
   ],
+  notifications: (params?: { page?: number; limit?: number }) => [
+    "notifications",
+    params || {},
+  ],
+  notificationUnreadCount: () => ["notifications", "unread-count"],
 };

@@ -17,6 +17,11 @@ import Link from "next/link";
 import { SessionReportModal } from "@/components/modals/SessionReportModal";
 import { useWorkoutSession } from "@/queries/workoutSessions/useWorkoutSession";
 
+interface PatientData {
+  firstName?: string;
+  lastName?: string;
+}
+
 type SessionScheduledByDate = {
   key: string;
   date: Date;
@@ -84,7 +89,7 @@ export default function PatientReports() {
                 Aucun rapport disponible pour l&apos;instant
               </h3>
               <p className="text-base">
-                Créer une séance pour {patient?.firstName} {patient?.lastName}
+                Créer une séance pour {(patient as unknown as PatientData)?.firstName} {(patient as unknown as PatientData)?.lastName}
               </p>
               <Button variant="default" asChild className="mt-4">
                 <Link href={ROUTES.newSession + "?patientId=" + patientId}>

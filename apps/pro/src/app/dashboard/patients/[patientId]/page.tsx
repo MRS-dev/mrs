@@ -5,6 +5,13 @@ import { usePatient } from "@/queries/patients/usePatient";
 import SessionCalendarCard from "./components/SessionCardCalendar";
 import SessionProgressCard from "./components/SessionProgressCard";
 import PainProgressCard from "./components/PainProgressCard";
+
+interface PatientData {
+  firstName?: string;
+  lastName?: string;
+  socialSecurityNumber?: string;
+}
+
 const PatientHome: React.FC = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const patient = usePatient(patientId);
@@ -48,13 +55,13 @@ const PatientHome: React.FC = () => {
                 </div>
                 <div className="flex flex-col items-start justify-end flex-1">
                   <span className="text-sm font-normal  leading-none">
-                    {patient.data?.firstName}
+                    {(patient.data as unknown as PatientData)?.firstName}
                   </span>
                   <span className="text-sm font-normal  leading-none">
-                    {patient.data?.lastName}
+                    {(patient.data as unknown as PatientData)?.lastName}
                   </span>
                   <span className="text-sm font-normal mt-2 leading-none">
-                    {patient.data?.socialSecurityNumber}
+                    {(patient.data as unknown as PatientData)?.socialSecurityNumber}
                   </span>
                 </div>
               </div>

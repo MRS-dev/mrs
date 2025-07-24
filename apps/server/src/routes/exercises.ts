@@ -19,22 +19,43 @@ const exercisesRoutes = new Hono<HonoType>()
   .get("/", zValidator("query", paginationSchema), async (c) => {
     const user = c.get("user");
     const userId = user?.id;
+    const userRole = user?.role;
     const { page, limit, offset } = getQueryPagination(c.req.valid("query"));
 
     if (!userId) {
       return c.json({ error: "User ID is not defined" }, 400);
     }
 
-    // Get total count of exercises
+    // Construire la condition WHERE selon le rôle de l'utilisateur
+    let whereCondition;
+    
+    console.log(`DEBUG: User role is ${userRole}, user ID is ${userId}`);
+    
+    if (userRole === "admin") {
+      // Les admins voient tous les exercices
+      whereCondition = sql`1=1`;
+    } else {
+      // Les pros/doctors voient :
+      // - Les exercices publics créés par des admins
+      // - Leurs propres exercices (peu importe le statut public/privé)
+      whereCondition = sql`
+        (author_type = 'admin' AND public = true) 
+        OR (author_type = 'doctor' AND author_id = ${userId})
+      `;
+    }
+
+    // Get total count of exercises with filtering
     const totalExercises = await db
       .select({ count: sql`COUNT(*)` })
       .from(exercises)
+      .where(whereCondition)
       .then((result) => result[0]?.count || 0);
 
-    // Get paginated list of exercises
+    // Get paginated list of exercises with filtering
     const exercisesList = await db
       .select()
       .from(exercises)
+      .where(whereCondition)
       .limit(limit)
       .offset(offset);
 
@@ -62,6 +83,7 @@ const exercisesRoutes = new Hono<HonoType>()
     async (c) => {
       const user = c.get("user");
       const userId = user?.id;
+      const userRole = user?.role;
 
       if (!userId) {
         return c.json({ error: "User ID is not defined" }, 400);
@@ -69,6 +91,9 @@ const exercisesRoutes = new Hono<HonoType>()
 
       const { title, description, photoUrl, videoUrl, tags } =
         c.req.valid("json");
+
+      // Déterminer le type d'auteur basé sur le rôle
+      const authorType = userRole === "admin" ? "admin" : "doctor";
 
       const [exercise] = await db
         .insert(exercises)
@@ -79,6 +104,7 @@ const exercisesRoutes = new Hono<HonoType>()
           videoUrl,
           tags,
           authorId: userId,
+          authorType,
         })
         .returning();
       return c.json(exercise);

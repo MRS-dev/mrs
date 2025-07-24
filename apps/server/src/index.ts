@@ -33,6 +33,8 @@ import adminAdsRoutes from "./routes/adminAds";
 import adsRoutes from "./routes/ads";
 import adEventsRoutes from "./routes/adEvents";
 import adminAdEventsRoutes from "./routes/adminAdEvents";
+import mobileCompatibilityRoutes from "./routes/mobileCompatibility";
+import notificationsRoutes from "./routes/notifications";
 
 const app = new Hono<HonoType>()
   .use(
@@ -68,6 +70,8 @@ const app = new Hono<HonoType>()
   .route("/", adEventsRoutes)
   .route("/", adminAdEventsRoutes)
   .route("/", userRoutes)
+  .route("/", mobileCompatibilityRoutes)
+  .route("/", notificationsRoutes)
   .get("/health", (c) => c.text("OK"));
 
 const port = process.env.PORT || 3000;
@@ -80,11 +84,13 @@ try {
       hostname: "0.0.0.0",
     },
     (info) => {
-      // On initialise le serveur WebSocket avec l'objet HTTP natif
-      io.listen(3003); // utilise un autre port (par exemple 3001)
+      // On initialise le serveur WebSocket sur le même port que l'API HTTP
+      const socketPort = Number(port) + 1000; // Port 4000 si API sur 3000
+      io.listen(socketPort);
       setupSocketHandlers(io);
 
       console.log(`🟢 Server is running on http://0.0.0.0:${info.port}`);
+      console.log(`🔌 Socket.IO server running on port ${socketPort}`);
       console.log(`🌱 Environment: ${process.env.NODE_ENV || "development"}`);
       const origin = [
         process.env.ADMIN_FRONTEND_URL!,

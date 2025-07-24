@@ -1,21 +1,51 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import SidebarLayout from "@/components/core/SidebarLayout";
-import { Search } from "lucide-react";
+import { Search, Info, Calendar, Phone, Mail, MapPin, CreditCard } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { usePatients } from "@/queries/patients";
 import GridLayout from "@/components/mrs/GridLayout";
+import PatientInfoModal from "@/components/modals/PatientInfoModal";
+
+interface Address {
+  street: string;
+  complement?: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+interface EmergencyContact {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  phoneNumber2?: string;
+  email?: string;
+}
+
+interface Patient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  birthDate: string;
+  phoneNumber?: string | null;
+  socialSecurityNumber: string;
+  address?: Address | null;
+  emergencyContact?: EmergencyContact | null;
+  allergies?: string | null;
+  status?: "created" | "invited" | "active" | "inactive" | null;
+}
 
 const Patients: React.FC = () => {
-  // const [status, setStatus] = useState<string[]>([
-  //   "VERIFIED",
-  //   "PENDING_VERIFICATIONS",
-  // ]);
-
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState<string>("");
   // const filter = { search };
   const {
@@ -31,7 +61,50 @@ const Patients: React.FC = () => {
     () => data?.pages.flatMap((page) => page.items) || [],
     [data]
   );
+
+  const handlePatientClick = (e: React.MouseEvent, patient: Patient) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedPatient(patient);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPatient(null);
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "inactive":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "invited":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "created":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case "active":
+        return "Actif";
+      case "inactive":
+        return "Inactif";
+      case "invited":
+        return "Invité";
+      case "created":
+        return "Créé";
+      default:
+        return "Inconnu";
+    }
+  };
   return (
+    <>
     <SidebarLayout
       Header={
         <SidebarLayoutHeader
@@ -132,20 +205,86 @@ const Patients: React.FC = () => {
       <div className="flex flex-1 flex-col gap-4 text-foreground  p-6 xl:max-w-screen-lg lg:max-w-screen-md md:max-w-screen-sm mx-auto w-full">
         <GridLayout
           renderGridItem={(item) => (
-            <div className="bg-background rounded-xl border shadow-sm p-4 flex flex-row items-start gap-2 hover:shadow-md cursor-pointer justify-start">
-              <Avatar>
-                <AvatarFallback className="bg-primary/20 text-primary">
-                  {item.firstName.charAt(0)}
-                  {item.lastName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col flex-1 space-y-1">
-                <h3 className="text-base font-semibold line-clamp-1">
-                  {item.firstName} {item.lastName}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 w-full">
-                  {format(new Date(item.birthDate), "dd/MM/yyyy")}
-                </p>
+            <div 
+              key={item.id}
+              className="bg-background rounded-xl border shadow-sm hover:shadow-md cursor-pointer relative group"
+            >
+              <div className="p-4 flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <Avatar className="size-12">
+                    <AvatarFallback className="bg-primary/20 text-primary">
+                      {item.firstName.charAt(0)}
+                      {item.lastName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-base font-semibold line-clamp-1">
+                        {item.firstName} {item.lastName}
+                      </h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => handlePatientClick(e, item)}
+                      >
+                        <Info className="size-4" />
+                      </Button>
+                    </div>
+                    {item.status && (
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs w-fit mb-2 ${getStatusColor(item.status)}`}
+                      >
+                        {getStatusLabel(item.status)}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  {item.birthDate && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="size-3 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {format(new Date(item.birthDate), "dd/MM/yyyy")} 
+                        ({new Date().getFullYear() - new Date(item.birthDate).getFullYear()} ans)
+                      </span>
+                    </div>
+                  )}
+                  {item.email && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="size-3 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground line-clamp-1">
+                        {item.email}
+                      </span>
+                    </div>
+                  )}
+                  {item.phoneNumber && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="size-3 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {item.phoneNumber}
+                      </span>
+                    </div>
+                  )}
+                  {item.socialSecurityNumber && (
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="size-3 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {item.socialSecurityNumber}
+                      </span>
+                    </div>
+                  )}
+                  {item.address && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="size-3 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground line-clamp-1">
+                        {item.address.city}, {item.address.postalCode}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -159,6 +298,13 @@ const Patients: React.FC = () => {
         />
       </div>
     </SidebarLayout>
+    
+    <PatientInfoModal
+      patient={selectedPatient}
+      isOpen={isModalOpen}
+      onClose={handleCloseModal}
+    />
+    </>
   );
 };
 

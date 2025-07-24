@@ -14,4 +14,25 @@ export type Chat = {
   createdAt: string; // Date de création
   lastUpdated?: string; // Date de mise à jour (facultatif)
   title?: string; // Titre de la conversation (facultatif, utile pour l'admin ou le doctor)
+  isSupport?: boolean; // Indique si c'est un chat de support
+  supportUserId?: string; // ID du professionnel pour les chats de support
+  lastMessage?: string; // Dernier message du chat (deprecated)
+  // Nouvelles propriétés pour les messages non lus
+  lastMessageId?: string; // ID du dernier message
+  lastMessageContent?: string; // Contenu du dernier message
+  lastMessageCreatedAt?: string; // Date de création du dernier message
+  lastMessageSenderId?: string; // ID de l'expéditeur du dernier message
+  unreadCount: number; // Nombre de messages non lus
+};
+
+export type Notification = {
+  id: string;
+  type: string;
+  title: string;
+  content: string;
+  userId?: string;
+  role?: string;
+  isRead: boolean;
+  createdAt: string;
+  data?: any;
 };

@@ -14,6 +14,8 @@ import { WizardForm } from "@/components/core/WizardForm/WizardForm";
 import { WizardFormStep } from "@/components/core/WizardForm/WizardFormStep";
 import { MrsBirthdayPicker } from "@/components/mrs/BirthdayPicker";
 import { useCreatePatient } from "@/queries/patients/useCreatePatient";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const phoneNumberSchema = z.string().refine(
   (val) => {
@@ -372,7 +374,21 @@ const EmergencyContactStep = () => {
 };
 
 const NewPatient: React.FC = () => {
-  const createPatient = useCreatePatient();
+  const router = useRouter();
+  const createPatient = useCreatePatient({
+    onSuccess: () => {
+      toast.success("Patient créé avec succès!", {
+        description: "Le patient a été ajouté et une invitation lui a été envoyée par email.",
+      });
+      router.push("/dashboard/patients");
+    },
+    onError: (error) => {
+      toast.error("Erreur lors de la création", {
+        description: error.message || "Une erreur s'est produite lors de la création du patient.",
+      });
+    },
+  });
+  
   const onSubmit = (json: CreatePatientSchema) => {
     createPatient.mutate({
       json,

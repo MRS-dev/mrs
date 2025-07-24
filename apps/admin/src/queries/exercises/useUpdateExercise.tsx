@@ -1,19 +1,33 @@
-import { ApiMutationOptions } from "@/lib/query";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../../../lib/apiClient";
-export const useUpdateExercise = (
-  options?: ApiMutationOptions<
-    (typeof client.api.admins.exercises)[":id"]["$patch"]
-  >
-) => {
+import { queryKeys } from "../queryKeys";
+
+interface UpdateExerciseData {
+  title?: string;
+  description?: string;
+  photoUrl?: string;
+  videoUrl?: string;
+  tags?: string[];
+  public?: boolean;
+}
+
+export const useUpdateExercise = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    ...(options || {}),
-    mutationFn: async (data) => {
-      const res = await client.api.admins.exercises[":id"].$patch(data);
-      if (!res.ok) {
-        throw new Error("An error occurred");
-      }
-      return res.json();
+    mutationFn: async ({ exerciseId, data }: { exerciseId: string; data: UpdateExerciseData }) => {
+      const response = await client.api.admins.exercises[":id"].$patch({
+        param: { id: exerciseId },
+        json: data,
+      });
+      if (!response.ok) throw new Error("Failed to update exercise");
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalider le cache des exercices pour rafraîchir la liste
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.exercises(),
+      });
     },
   });
 };

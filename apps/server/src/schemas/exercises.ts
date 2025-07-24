@@ -13,6 +13,7 @@ export const exercises = pgTable("exercises", {
   authorId: uuid("author_id").references(() => user.id, {
     onDelete: "set null",
   }),
+  authorType: text("author_type", { enum: ["admin", "doctor"] }).default("doctor"),
   tags: text("tags").array(),
   public: boolean("public").default(false),
 });

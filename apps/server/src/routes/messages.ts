@@ -4,6 +4,7 @@ import { roles } from "../lib/roles";
 import { db } from "../lib/db";
 import { eq, desc, and } from "drizzle-orm";
 import { messages } from "../schemas/messages";
+import { chats } from "../schemas/chats";
 import { zValidator } from "@hono/zod-validator";
 import { createMessageSchema } from "../validations/messages";
 import { io } from "../socket";
@@ -15,11 +16,14 @@ const messagesRoutes = new Hono<HonoType>()
     const user = c.get("user");
     const userId = user?.id || "";
     const { chatId } = c.req.param();
+
+    // Récupérer TOUS les messages du chat, pas seulement ceux de l'utilisateur connecté
     const responses = await db
       .select()
       .from(messages)
-      .where(and(eq(messages.chatId, chatId), eq(messages.senderId, userId)))
+      .where(eq(messages.chatId, chatId))
       .orderBy(messages.createdAt);
+
     return c.json(responses);
   })
   .post(
@@ -34,14 +38,40 @@ const messagesRoutes = new Hono<HonoType>()
           return c.json({ message: "User not found" }, 404);
         }
         const { content, chatId } = await c.req.json();
-        const newMessage = await db
-          .insert(messages)
-          .values({ content, chatId, senderId: userId || "" })
-          .returning();
+
+        // Créer le message et mettre à jour lastUpdated du chat en une transaction
+        const [newMessage] = await db.transaction(async (tx) => {
+          // Insérer le nouveau message
+          const messageResult = await tx
+            .insert(messages)
+            .values({ content, chatId, senderId: userId || "" })
+            .returning();
+
+          // Mettre à jour lastUpdated du chat
+          await tx
+            .update(chats)
+            .set({ lastUpdated: new Date() })
+            .where(eq(chats.id, chatId));
+
+          return messageResult;
+        });
 
         console.log("🔊 Emitting newMessage to chatId:", chatId, newMessage);
         io.to(chatId).emit("newMessage", newMessage);
-        return c.json(newMessage[0], 201);
+
+        // Envoyer une notification aux autres participants du chat
+        // TODO: Récupérer les participants du chat et envoyer des notifications
+        // sendNotification({
+        //   id: Date.now().toString(),
+        //   type: "new_message",
+        //   title: "Nouveau message",
+        //   content: `Nouveau message dans ${chatId}`,
+        //   isRead: false,
+        //   createdAt: new Date().toISOString(),
+        //   data: { chatId }
+        // }, { userId: "otherParticipantId" });
+
+        return c.json(newMessage, 201);
       } catch (error) {
         console.error("Error creating message:", error);
         return c.json({ message: "Error creating message" }, 500);

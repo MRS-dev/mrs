@@ -12,6 +12,7 @@ export const createPatientSchema = patientInsertSchema
     emergencyContact: true,
     email: true,
     phoneNumber: true,
+    phoneNumber2: true,
     lastName: true,
     birthDate: true,
   })
@@ -29,6 +30,7 @@ export const updatePatientSchema = patientInsertSchema
     emergencyContact: true,
     email: true,
     phoneNumber: true,
+    phoneNumber2: true,
   })
   .extend({
     birthDate: z.coerce.date(),

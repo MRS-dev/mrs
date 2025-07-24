@@ -1,8 +1,19 @@
 "use client";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
-import { Sidebar as SidebarIcon } from "lucide-react";
+import { Sidebar as SidebarIcon, Bell } from "lucide-react";
 import useSidebarStore from "./Sidebar/Sidebar.store";
+import { useNotifications } from "@/hooks/useNotifications";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import type { Notification } from "@mrs/socket-client";
 interface SidebarLayoutProps {
   Header?: React.ReactNode;
   Footer?: React.ReactNode;
@@ -14,38 +25,27 @@ const SidebarLayoutHeader = ({
   children,
 }: SidebarLayoutProps) => {
   const { toggle } = useSidebarStore();
-  // const { toast } = useToast();
-  // const { notifications, markAsRead, addNotification } = useNotificationContext();
-  // const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
+  const router = useRouter();
+  const { notifications, markAsRead, hasUnreadNotifications } = useNotifications();
 
-  // useEffect(() => {
-  //   socket.on("newNotification", (notification: any) => {
-  //     console.log("NEW NOTIFICATION: ", notification)
-  //     addNotification(notification)
-  //     toast({
-  //       title: "Nouvelle Notification",
-  //       description: notification.content,
-  //       variant: "default",
-  //     });
-  //   });
-  //   return () => {
-  //     socket.off("newNotification");
-  //   };
-  // }, []);
-
-  // const handleNotificationClick = (notification: any) => {
-
-  //   markAsRead(notification.id)
-  //   switch (notification.type) {
-  //     case "new_doctor_request":
-  //       router.push(`/registration-requests`); // Par exemple, aller vers un chat spécifique
-  //       break;
-  //     default:
-  //       console.warn("Type de notification inconnu :", notification.type);
-  //       break;
-  //   }
-  //TODO Handle go to en fonction du type de la notif
-  // }
+  const handleNotificationClick = (notification: Notification) => {
+    markAsRead(notification.id);
+    
+    switch (notification.type) {
+      case "new_doctor_request":
+        router.push(`/dashboard/registration-requests`);
+        break;
+      case "new_message":
+        router.push(`/dashboard/chats`);
+        break;
+      case "new_patient":
+        router.push(`/dashboard/patients`);
+        break;
+      default:
+        console.warn("Type de notification inconnu :", notification.type);
+        break;
+    }
+  };
 
   return (
     <>
@@ -61,11 +61,11 @@ const SidebarLayoutHeader = ({
             >
               <SidebarIcon />
             </Button>
-            {/* <div className="ml-auto">
+            <div className="ml-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Notifications">
-                  <div className="relative">
+                    <div className="relative">
                       <Bell />
                       {hasUnreadNotifications && (
                         <span className="absolute top-0 right-0 flex h-2 w-2">
@@ -80,15 +80,24 @@ const SidebarLayoutHeader = ({
                   <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {notifications.length === 0 ? (
-                    <DropdownMenuItem>Pas de nouvelles notifications</DropdownMenuItem>
+                    <DropdownMenuItem disabled>
+                      Pas de nouvelles notifications
+                    </DropdownMenuItem>
                   ) : (
-                    notifications.map((notification) => (
+                    notifications.slice(0, 5).map((notification) => (
                       <DropdownMenuItem
                         key={notification.id}
-                        className="flex justify-between items-center"
+                        className="flex justify-between items-center cursor-pointer"
                         onClick={() => handleNotificationClick(notification)}
                       >
-                        <span>{notification.content}</span>
+                        <div className="flex flex-col flex-1">
+                          <span className="font-medium text-sm">
+                            {notification.title}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {notification.content}
+                          </span>
+                        </div>
                         {!notification.isRead && (
                           <span className="ml-2 rounded-full bg-blue-500 text-white text-xs px-2 py-1">
                             Nouveau
@@ -100,13 +109,13 @@ const SidebarLayoutHeader = ({
                   {notifications.length > 0 && <DropdownMenuSeparator />}
                   <DropdownMenuItem
                     onClick={() => markAsRead("all")}
-                    className="text-center text-sm text-muted-foreground"
+                    className="text-center text-sm text-muted-foreground cursor-pointer"
                   >
                     Marquer tout comme lu
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div> */}
+            </div>
             <Separator orientation="vertical" className="mr-2 h-4" />
             {children}
           </div>

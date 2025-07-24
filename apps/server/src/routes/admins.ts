@@ -163,6 +163,11 @@ const adminsRoutes = new Hono<HonoType>()
           email: patients.email,
           status: patients.status,
           birthDate: patients.birthDate,
+          phoneNumber: patients.phoneNumber,
+          socialSecurityNumber: patients.socialSecurityNumber,
+          address: patients.address,
+          emergencyContact: patients.emergencyContact,
+          allergies: patients.allergies,
         })
         .from(patients)
         .limit(limit)

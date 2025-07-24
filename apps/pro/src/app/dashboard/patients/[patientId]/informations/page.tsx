@@ -15,6 +15,16 @@ import { useParams } from "next/navigation";
 import { usePatient } from "@/queries/patients/usePatient";
 import { MrsBirthdayPicker } from "@/components/mrs/BirthdayPicker";
 
+interface PatientData {
+  lastName: string;
+  firstName: string;
+  birthDate: string;
+  email: string;
+  phoneNumber?: string;
+  socialSecurityNumber?: string;
+  allergies?: string;
+}
+
 const PatientInformationsSchema = z.object({
   lastName: z.string().min(1, { message: "Le nom est requis" }),
   firstName: z.string().min(1, { message: "Le prénom est requis" }),
@@ -48,15 +58,16 @@ const PatientProgram: React.FC = () => {
     },
   });
   useEffect(() => {
-    if (patient) {
+    if (patient && typeof patient === 'object' && 'lastName' in patient) {
+      const patientData = patient as PatientData;
       form.reset({
-        lastName: patient.lastName,
-        firstName: patient.firstName,
-        birthDate: new Date(patient.birthDate),
-        email: patient.email,
-        phoneNumber: patient.phoneNumber || "",
-        socialSecurityNumber: patient.socialSecurityNumber || "",
-        allergies: patient.allergies || "",
+        lastName: patientData.lastName,
+        firstName: patientData.firstName,
+        birthDate: new Date(patientData.birthDate),
+        email: patientData.email,
+        phoneNumber: patientData.phoneNumber || "",
+        socialSecurityNumber: patientData.socialSecurityNumber || "",
+        allergies: patientData.allergies || "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

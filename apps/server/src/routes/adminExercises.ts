@@ -95,6 +95,7 @@ const adminExercisesRoutes = new Hono<HonoType>()
         photoUrl: true,
         videoUrl: true,
         tags: true,
+        public: true,
       })
     ),
     async (c) => {
@@ -106,7 +107,7 @@ const adminExercisesRoutes = new Hono<HonoType>()
         return c.json({ error: "User ID is not defined" }, 400);
       }
 
-      // Check if user is the author of the exercise
+      // Check if exercise exists
       const [existingExercise] = await db
         .select()
         .from(exercises)
@@ -116,12 +117,7 @@ const adminExercisesRoutes = new Hono<HonoType>()
         return c.json({ error: "Exercise not found" }, 404);
       }
 
-      if (existingExercise.authorId !== userId) {
-        return c.json(
-          { error: "You are not authorized to modify this exercise" },
-          403
-        );
-      }
+      // Admins can modify any exercise
 
       const newValues = c.req.valid("json");
 
@@ -143,7 +139,7 @@ const adminExercisesRoutes = new Hono<HonoType>()
       return c.json({ error: "User ID is not defined" }, 400);
     }
 
-    // Check if user is the author of the exercise
+    // Check if exercise exists
     const [existingExercise] = await db
       .select()
       .from(exercises)
@@ -153,12 +149,7 @@ const adminExercisesRoutes = new Hono<HonoType>()
       return c.json({ error: "Exercise not found" }, 404);
     }
 
-    if (existingExercise.authorId !== userId) {
-      return c.json(
-        { error: "You are not authorized to delete this exercise" },
-        403
-      );
-    }
+    // Admins can delete any exercise
 
     await db.delete(exercises).where(eq(exercises.id, id));
 

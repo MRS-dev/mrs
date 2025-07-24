@@ -1,21 +1,32 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
 import SidebarLayout from "@/components/core/SidebarLayout";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/routes";
-import { Plus } from "lucide-react";
-import { useParams, usePathname } from "next/navigation";
+import { Plus, Trash2 } from "lucide-react";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { MrsAvatar } from "@/components/mrs/MrsAvatar";
 import { usePatient } from "@/queries/patients/usePatient";
 import { cn } from "@/lib/utils";
+import DeletePatientModal from "@/components/modals/DeletePatientModal";
+
+interface PatientData {
+  id?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
 const PatientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { patientId } = useParams<{ patientId: string }>();
   const patientQuery = usePatient(patientId);
   const pathname = usePathname();
+  const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const isPatientHome = useMemo(
     () => pathname === ROUTES.patientOverview(patientId),
@@ -33,6 +44,18 @@ const PatientLayout: React.FC<{ children: React.ReactNode }> = ({
     () => pathname === ROUTES.patientInformations(patientId),
     [pathname, patientId]
   );
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeleteSuccess = () => {
+    router.push(ROUTES.patients);
+  };
   return (
     <SidebarLayout
       className="max-h-screen h-screen"
@@ -83,16 +106,23 @@ const PatientLayout: React.FC<{ children: React.ReactNode }> = ({
             <div className="flex flex-row items-center gap-2 justify-between flex-1 w-full">
               <div className="flex flex-row items-center gap-2">
                 <MrsAvatar
-                  displayName={`${patientQuery.data?.firstName} ${patientQuery.data?.lastName}`}
+                  displayName={`${(patientQuery.data as unknown as PatientData)?.firstName || ''} ${(patientQuery.data as unknown as PatientData)?.lastName || ''}`}
                   src={""}
-                  alt={`${patientQuery.data?.firstName} ${patientQuery.data?.lastName}`}
+                  alt={`${(patientQuery.data as unknown as PatientData)?.firstName || ''} ${(patientQuery.data as unknown as PatientData)?.lastName || ''}`}
                   size={32}
                 />
                 <h1 className="text-lg font-bold">
-                  {patientQuery.data?.firstName} {patientQuery.data?.lastName}
+                  {(patientQuery.data as unknown as PatientData)?.firstName} {(patientQuery.data as unknown as PatientData)?.lastName}
                 </h1>
               </div>
               <div className="flex flex-row items-center space-x-3">
+                <Button 
+                  variant="outline"
+                  onClick={handleDeleteClick}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  <Trash2 /> Supprimer
+                </Button>
                 <Button variant="default" asChild>
                   <Link href={ROUTES.newSession + `?patientId=${patientId}`}>
                     <Plus /> Nouvelle séance
@@ -109,6 +139,18 @@ const PatientLayout: React.FC<{ children: React.ReactNode }> = ({
           {children}
         </div>
       </div>
+      
+      <DeletePatientModal
+        patient={patientQuery.data ? {
+          id: patientId,
+          firstName: (patientQuery.data as PatientData)?.firstName || '',
+          lastName: (patientQuery.data as PatientData)?.lastName || '',
+          email: (patientQuery.data as PatientData)?.email || '',
+        } : null}
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onSuccess={handleDeleteSuccess}
+      />
     </SidebarLayout>
   );
 };

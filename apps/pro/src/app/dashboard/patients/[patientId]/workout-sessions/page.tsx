@@ -17,6 +17,11 @@ import { MrsConfirmationModal } from "@/components/mrs/MrsConfirmationModal";
 import { TimelineDate } from "@/components/Timeline";
 import { SessionCard } from "@/components/SessionCard";
 
+interface PatientData {
+  firstName?: string;
+  lastName?: string;
+}
+
 type SessionScheduledByDate = {
   key: string;
   date: Date;
@@ -116,7 +121,7 @@ export default function PatientWorkoutSessions() {
                 Aucune séance programmée
               </h3>
               <p className="text-base">
-                Créer une séance pour {patient?.firstName}
+                Créer une séance pour {(patient as unknown as PatientData)?.firstName}
               </p>
               <Button variant="default" asChild className="mt-4">
                 <Link href={ROUTES.newSession + "?patientId=" + patientId}>

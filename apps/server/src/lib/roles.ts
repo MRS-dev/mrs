@@ -5,18 +5,18 @@ import type { Roles } from "./permissions";
 type AllowedRoles = Roles | "authenticated";
 export const roles = (...allowedRoles: AllowedRoles[]): MiddlewareHandler => {
   return async (c, next) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    // Utilise les données déjà présentes dans le contexte via le middleware d'auth
+    const session = c.get("session");
+    const user = c.get("user");
 
-    if (!session?.user) {
+    if (!user || !session) {
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const userRole = session.user.role as Roles;
+    const userRole = user.role as Roles;
 
     // Si "authenticated" est demandé, n'importe quel user connecté suffit
     if (allowedRoles.includes("authenticated")) {
-      c.set("session", session);
-      c.set("user", session.user);
       return await next();
     }
 
@@ -25,13 +25,11 @@ export const roles = (...allowedRoles: AllowedRoles[]): MiddlewareHandler => {
       return c.json({ error: "Forbidden" }, 403);
     }
     if (roleThatRequire2Fa.includes(userRole)) {
-      if (!session.user.twoFactorEnabled) {
+      if (!user.twoFactorEnabled) {
         return c.json({ error: "2FA required" }, 403);
       }
     }
 
-    c.set("session", session);
-    c.set("user", session.user);
     await next();
   };
 };

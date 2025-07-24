@@ -10,6 +10,31 @@ import { usePatient } from "@/queries/patients/usePatient";
 import { MrsAvatar } from "../mrs/MrsAvatar";
 import { useDebounce } from "@/hooks/useDebounce";
 
+interface PatientData {
+  firstName?: string;
+  lastName?: string;
+}
+
+interface Patient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  email?: string;
+}
+
+interface PageData {
+  items: Patient[];
+  pageInfo: {
+    totalCount: number;
+    hasNextPage?: boolean;
+  };
+}
+
+interface PatientsData {
+  pages: PageData[];
+}
+
 interface PatientPickerProps {
   value: string; // L'ID du patient sélectionné
   onChange: (value: string) => void;
@@ -34,7 +59,7 @@ export default function PatientPicker({
       valueExtractor={(item) => item.id}
       renderValue={() => {
         return (
-          patientQuery?.data?.firstName + " " + patientQuery?.data?.lastName
+          (patientQuery?.data as unknown as PatientData)?.firstName + " " + (patientQuery?.data as unknown as PatientData)?.lastName
         );
       }}
       onSelect={onChange}
@@ -84,11 +109,11 @@ export default function PatientPicker({
       keyExtractor={(item) => item.id}
       search={search}
       onSearch={setSearch}
-      items={patientsQuery.data?.pages.flatMap((page) => page.items) || []}
-      resultsCount={patientsQuery.data?.pages[0]?.pageInfo.totalCount}
-      totalCount={patientsQuery.data?.pages[0]?.pageInfo.totalCount}
+      items={(patientsQuery.data as unknown as PatientsData)?.pages?.flatMap((page: PageData) => page.items) || []}
+      resultsCount={(patientsQuery.data as unknown as PatientsData)?.pages[0]?.pageInfo?.totalCount}
+      totalCount={(patientsQuery.data as unknown as PatientsData)?.pages[0]?.pageInfo?.totalCount}
       isLoading={patientsQuery.isLoading}
-      hasMore={!!patientsQuery.data?.pages[0].pageInfo?.hasNextPage}
+      hasMore={!!(patientsQuery.data as unknown as PatientsData)?.pages[0]?.pageInfo?.hasNextPage}
       onLoadMore={() => {
         patientsQuery.refetch();
       }}

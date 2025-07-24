@@ -10,6 +10,7 @@ import { registrationRequests } from "../schemas/registrationRequests";
 import { chats } from "../schemas/chats";
 import { pros } from "../schemas/pros";
 import { patients } from "../schemas/patients";
+import { createSupportChat, addAdminToSupportChats } from "../utils/supportChat";
 
 const invitationsRoutes = new Hono<HonoType>()
   .basePath("/invitations")
@@ -69,7 +70,7 @@ const invitationsRoutes = new Hono<HonoType>()
           },
         });
 
-        // 2. Si c'est un admin, activer automatiquement le 2FA
+        // 2. Si c'est un admin, activer automatiquement le 2FA et l'ajouter aux chats de support
         if (invitation.role === "admin") {
           console.log("CREATING USER");
           // Créer une session temporaire pour l'utilisateur
@@ -98,6 +99,9 @@ const invitationsRoutes = new Hono<HonoType>()
             .update(invitations)
             .set({ acceptedAt: new Date() })
             .where(eq(invitations.email, email));
+
+          // Ajouter le nouvel admin à tous les chats de support existants
+          await addAdminToSupportChats(admin.user.id);
 
           console.log("UPDATED INVITATION");
         }
@@ -200,14 +204,8 @@ const invitationsRoutes = new Hono<HonoType>()
           .update(invitations)
           .set({ acceptedAt: new Date() })
           .where(eq(invitations.email, email));
-        await db
-          .insert(chats)
-          .values({
-            participants: [user.id],
-            lastUpdated: new Date(),
-            title: `Support - ${firstName} ${lastName}`,
-          })
-          .returning();
+        
+        // Créer le professionnel dans la base
         await db.insert(pros).values({
           id: user.id,
           firstName: registrationRequest.firstName,
@@ -215,6 +213,9 @@ const invitationsRoutes = new Hono<HonoType>()
           email: registrationRequest.email,
           phoneNumber: registrationRequest.phoneNumber,
         });
+
+        // Créer le chat de support automatiquement
+        await createSupportChat(user.id, firstName, lastName);
         return c.json({
           user,
           requires2FA: false,

@@ -6,7 +6,11 @@
     "clean": "rm -rf dist",
     "build": "pnpm run clean && tsc",
     "start": "tsx src/index.ts",
-    "better-auth:generate": "npx @better-auth/cli generate --config src/lib/auth.ts --output src/lib/db/schemas/auth.ts"
+    "better-auth:generate": "npx @better-auth/cli generate --config src/lib/auth.ts --output src/lib/db/schemas/auth.ts",
+    "migrate:support-chat": "tsx src/migrations/runSupportChatMigration.ts",
+    "verify:support-chat": "tsx src/migrations/verifyMigration.ts",
+    "migrate:message-reads": "tsx src/migrations/addMessageReadsTable.ts",
+    "test:unread-messages": "tsx src/migrations/testUnreadMessages.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
