@@ -104,6 +104,7 @@ const Exercises: React.FC = () => {
   };
 
   const handleConfirmDelete = () => {
+    console.log("toto");
     if (exerciseToDelete) {
       deleteExercise.mutate({ param: { id: exerciseToDelete.id } });
     }
