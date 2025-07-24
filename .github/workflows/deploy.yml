@@ -18,7 +18,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/debian/srv/mrs
-            git pull origin mrs-sb
+            git fetch origin mrs-sb
+            git reset --hard origin/mrs-sb
             pnpm install
             pnpm run sync-env
             pnpm run build
