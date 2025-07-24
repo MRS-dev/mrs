@@ -134,15 +134,15 @@ export default function Notifications() {
             <div className="flex flex-row items-center space-x-3">
               {/* Filtre par type */}
               <Select
-                value={selectedTypes.join(",")}
-                onValueChange={(value) => setSelectedTypes(value ? value.split(",") : [])}
+                value={selectedTypes.length > 0 ? selectedTypes.join(",") : "all"}
+                onValueChange={(value) => setSelectedTypes(value === "all" ? [] : value.split(","))}
               >
                 <SelectTrigger className="w-40">
                   <Filter className="w-4 h-4 mr-2" />
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les types</SelectItem>
+                  <SelectItem value="all">Tous les types</SelectItem>
                   {Object.entries(NOTIFICATION_TYPES).map(([key, config]) => (
                     <SelectItem key={key} value={key}>
                       <div className="flex items-center gap-2">

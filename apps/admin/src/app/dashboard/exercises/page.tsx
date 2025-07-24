@@ -68,6 +68,14 @@ export default function Exercises() {
   };
 
   const handleUpdateVisibility = async (exerciseId: string, isPublic: boolean) => {
+    const exercise = exercises?.find(ex => ex.id === exerciseId);
+    
+    // Empêcher les admins de modifier le statut public des exercices de docteurs
+    if (exercise?.authorType === "doctor") {
+      alert("Vous ne pouvez pas modifier le statut public d'un exercice créé par un docteur.");
+      return;
+    }
+    
     try {
       await updateExercise.mutateAsync({
         exerciseId,
@@ -164,6 +172,17 @@ export default function Exercises() {
                       </div>
                       
                       <div className="flex items-center gap-2 mb-2">
+                        {exercise.authorType === "admin" ? (
+                          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-xs">
+                            <User className="w-3 h-3 mr-1" />
+                            Admin
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                            <User className="w-3 h-3 mr-1" />
+                            Docteur
+                          </Badge>
+                        )}
                         {exercise.public ? (
                           <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200 text-xs">
                             <Eye className="w-3 h-3 mr-1" />

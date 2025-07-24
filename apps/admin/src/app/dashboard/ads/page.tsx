@@ -131,9 +131,9 @@ const Ads: React.FC = () => {
                       title={ad.enable ? "Désactiver" : "Activer"}
                     >
                       {ad.enable ? (
-                        <ToggleRight className="w-30 h-30 text-green-500" />
+                        <ToggleRight className="w-8 h-8 text-green-500" />
                       ) : (
-                        <ToggleLeft className="w-30 h-30 text-muted-foreground" />
+                        <ToggleLeft className="w-8 h-8 text-muted-foreground" />
                       )}
                     </Button>
                   </div>
