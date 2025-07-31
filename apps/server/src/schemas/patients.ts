@@ -70,5 +70,7 @@ export const patients = pgTable("patients", {
   address: jsonb("address").$type<Address>(),
   emergencyContact: jsonb("emergency_contact").$type<EmergencyContact>(),
   allergies: text("allergies"),
+  weight: text("weight"), // Stocker comme text pour plus de flexibilité
+  height: text("height"), // Stocker comme text pour plus de flexibilité
   status: text({ enum: ["created", "invited", "active", "inactive"] }),
 });

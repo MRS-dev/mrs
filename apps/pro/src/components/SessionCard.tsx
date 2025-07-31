@@ -68,15 +68,44 @@ export const SessionCard = ({
       onClick={mode === "select" ? onSelect : onClick}
     >
       <div className="flex flex-row justify-between items-center w-full">
-        <h3 className="text-base font-medium text-foreground line-clamp-1 truncate">
-          {!!date &&
-            `Séance du ${format(date, "dd MMMM yyyy", {
-              locale: fr,
-            })}`}
-          <span className="text-xs text-muted-foreground ml-2">
-            {workoutSession.data?.program?.exercises?.length} exercice
-          </span>
-        </h3>
+        <div className="flex flex-col items-start gap-1">
+          <h3 className="text-base font-medium text-foreground line-clamp-1 truncate">
+            {!!date &&
+              `Séance du ${format(date, "dd MMMM yyyy", {
+                locale: fr,
+              })}`}
+            <span className="text-xs text-muted-foreground ml-2">
+              {workoutSession.data?.program?.exercises?.length} exercice
+            </span>
+          </h3>
+          <div className="flex items-center gap-2">
+            {workoutSession.data?.status && (
+              <span
+                className={`px-2 py-1 rounded-md text-xs font-medium ${
+                  workoutSession.data.status === "completed"
+                    ? "bg-green-100 text-green-800"
+                    : workoutSession.data.status === "cancelled"
+                    ? "bg-red-100 text-red-800"
+                    : workoutSession.data.status === "started"
+                    ? "bg-blue-100 text-blue-800"
+                    : workoutSession.data.status === "paused"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {workoutSession.data.status === "completed"
+                  ? "Terminée"
+                  : workoutSession.data.status === "cancelled"
+                  ? "Manquée"
+                  : workoutSession.data.status === "started"
+                  ? "En cours"
+                  : workoutSession.data.status === "paused"
+                  ? "En pause"
+                  : "Créée"}
+              </span>
+            )}
+          </div>
+        </div>
         <div className="flex items-center justify-end w-6 h-6 overflow-visible">
           {mode === "select" ? (
             <SimpleCheckbox

@@ -11,6 +11,8 @@ import { chats } from "../schemas/chats";
 import { pros } from "../schemas/pros";
 import { patients } from "../schemas/patients";
 import { createSupportChat, addAdminToSupportChats } from "../utils/supportChat";
+import { createProPatientChat } from "../utils/chatUtils";
+import { patientProRelations } from "../schemas/patientProRelations";
 
 const invitationsRoutes = new Hono<HonoType>()
   .basePath("/invitations")
@@ -277,12 +279,34 @@ const invitationsRoutes = new Hono<HonoType>()
         .update(invitations)
         .set({ acceptedAt: new Date() })
         .where(eq(invitations.email, email));
-      await db
+      
+      const [updatedPatient] = await db
         .update(patients)
         .set({
           userId: user.id,
         })
-        .where(eq(patients.email, email));
+        .where(eq(patients.email, email))
+        .returning();
+
+      // Maintenant que le patient a un userId, créer le chat avec son pro
+      try {
+        // Récupérer l'ID du pro qui a invité ce patient
+        const [relation] = await db
+          .select({ proId: patientProRelations.proId })
+          .from(patientProRelations)
+          .where(eq(patientProRelations.patientId, updatedPatient.id));
+
+        if (relation?.proId) {
+          await createProPatientChat(relation.proId, updatedPatient.id);
+          console.log("Chat created successfully between pro and patient after invitation acceptance");
+        } else {
+          console.warn("No pro-patient relation found for patient", updatedPatient.id);
+        }
+      } catch (chatError) {
+        console.error("Failed to create chat after patient invitation acceptance:", chatError);
+        // Ne pas faire échouer l'acceptation d'invitation si le chat échoue
+      }
+
       return c.json(user);
     }
   );

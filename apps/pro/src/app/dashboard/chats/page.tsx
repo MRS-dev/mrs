@@ -72,7 +72,11 @@ export default function Chats() {
         queryClient.setQueryData(
           ["messages", selectedChat],
           (old: Message[] | undefined) => {
-            return old ? [...old, message] : [message];
+            if (!old) return [message];
+            // Éviter les doublons en vérifiant l'ID
+            const exists = old.some(m => m.id === message.id);
+            if (exists) return old;
+            return [...old, message];
           }
         );
         // Auto-scroll pour les nouveaux messages (pas nos propres messages)
@@ -110,6 +114,8 @@ export default function Chats() {
           handleNewMessage(true);
           // Mettre à jour la liste des chats pour afficher le dernier message
           queryClient.invalidateQueries({ queryKey: ["chats"] });
+          // Mettre à jour les messages du chat actuel
+          queryClient.invalidateQueries({ queryKey: ["messages", selectedChat] });
         }
       });
       // Réinitialiser le formulaire après envoi

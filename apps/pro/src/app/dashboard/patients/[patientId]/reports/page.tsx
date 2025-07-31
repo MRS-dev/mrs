@@ -33,7 +33,6 @@ export default function PatientReports() {
   const filter = useMemo(
     () => ({
       patientId,
-      to: new Date().toISOString(),
       limit: "1000",
       page: "1",
     }),
@@ -44,9 +43,29 @@ export default function PatientReports() {
 
   const sessionsByDate = useMemo(() => {
     const newSessionsByDate: SessionScheduledByDate[] = [];
-    workoutSessionsQuery?.data?.pages
-      .flatMap((page) => page.items)
-      .forEach((session) => {
+    const allSessions = workoutSessionsQuery?.data?.pages.flatMap((page) => page.items) || [];
+    console.log("Reports - all sessions:", allSessions);
+    
+    const filteredSessions = allSessions
+      // Only include sessions that have been completed or have exercise reports
+      .filter((session) => {
+        const hasReports = session.status === "completed" || 
+               session.status === "cancelled" ||
+               (session.report?.exercises && session.report.exercises.length > 0);
+        console.log("Session filter check:", {
+          sessionId: session.id,
+          status: session.status,
+          hasExerciseReports: (session.report?.exercises?.length || 0) > 0,
+          includeInReports: hasReports
+        });
+        return hasReports;
+      })
+      // Sort by date (most recent first)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    console.log("Reports - filtered sessions:", filteredSessions);
+    
+    filteredSessions.forEach((session) => {
         const dateIsAlreadyInSessionsByDate = newSessionsByDate.find(
           (sessionByDate) => isSameDay(sessionByDate.date, session.date)
         );
@@ -149,10 +168,24 @@ export default function PatientReports() {
 
 const BadgeReportStatus = ({ sessionId }: { sessionId: string }) => {
   const { data: session } = useWorkoutSession(sessionId);
+  console.log("BadgeReportStatus - session:", session);
+  console.log("BadgeReportStatus - sessionId:", sessionId);
   const badge = useMemo(() => {
+    console.log("BadgeReportStatus - raw report data:", {
+      sessionId,
+      allExercises: session?.program?.exercises,
+      exercisesCount: session?.program?.exercises?.length,
+      reports: session?.report?.exercises,
+      reportsCount: session?.report?.exercises?.length,
+      sessionStatus: session?.status
+    });
+    
     const exercisesReports = session?.report?.exercises?.filter(
       (exerciseReport) => exerciseReport.status !== null
     );
+    
+    console.log("BadgeReportStatus - filtered reports:", exercisesReports);
+    
     const allExercisesHaveReport =
       exercisesReports?.length === session?.program?.exercises?.length;
     const allExercisesAreCompleted =
@@ -160,6 +193,13 @@ const BadgeReportStatus = ({ sessionId }: { sessionId: string }) => {
       exercisesReports?.every(
         (exerciseReport) => exerciseReport.status === "completed"
       );
+      
+    console.log("BadgeReportStatus - logic check:", {
+      allExercisesHaveReport,
+      allExercisesAreCompleted,
+      exercisesReportsLength: exercisesReports?.length,
+      programExercisesLength: session?.program?.exercises?.length
+    });
     if (allExercisesAreCompleted) {
       return {
         label: "Réussi",

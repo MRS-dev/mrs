@@ -55,7 +55,7 @@ export const setupSocketHandlers = (io: SocketIOServer) => {
       try {
         console.log(`📤 Réception d'un message pour le chat : ${messageData.chatId}`);
         // Émettre le message à tous les participants du chat
-        io.to(messageData.chatId).emit("newMessage", [messageData]);
+        io.to(messageData.chatId).emit("newMessage", messageData);
       } catch (error) {
         console.error("❌ Erreur lors de l'envoi du message:", error);
       }

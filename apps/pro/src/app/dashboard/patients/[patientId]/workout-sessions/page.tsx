@@ -32,10 +32,10 @@ export default function PatientWorkoutSessions() {
   const { patientId } = useParams<{ patientId: string }>();
   const [mode, setMode] = useState<"default" | "select">("default");
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const filter = useMemo(
     () => ({
       patientId,
-      from: new Date().toISOString(),
       limit: "1000",
       page: "1",
     }),
@@ -43,10 +43,19 @@ export default function PatientWorkoutSessions() {
   );
   const workoutSessionsQuery = useWorkoutSessions(filter);
   const { data } = workoutSessionsQuery;
-  const workoutSessions = useMemo(
-    () => data?.pages.flatMap((page) => page.items) || [],
-    [data]
-  );
+  const workoutSessions = useMemo(() => {
+    let sessions = data?.pages.flatMap((page) => page.items) || [];
+    
+    // Filter by status if selected
+    if (statusFilter) {
+      sessions = sessions.filter(session => session.status === statusFilter);
+    }
+    
+    // Sort by date (most recent first)
+    sessions = sessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return sessions;
+  }, [data, statusFilter]);
 
   const { data: patient } = usePatient(patientId);
 
@@ -100,7 +109,7 @@ export default function PatientWorkoutSessions() {
         <div className="flex-1 flex flex-col gap-3   w-full max-w-2xl mx-auto py-10 px-5">
           <div className="flex flex-row items-center justify-between gap-2">
             <h2 className="text-2xl font-semibold text-foreground">
-              Prochaines séances
+              Séances
             </h2>
             {sessionsByDate?.length > 0 && (
               <Button
@@ -113,6 +122,45 @@ export default function PatientWorkoutSessions() {
                 {mode === "select" ? "Annuler" : "Sélection"}
               </Button>
             )}
+          </div>
+
+          {/* Status Filters */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={statusFilter === null ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter(null)}
+            >
+              Toutes
+            </Button>
+            <Button
+              variant={statusFilter === "created" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("created")}
+            >
+              À faire
+            </Button>
+            <Button
+              variant={statusFilter === "completed" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("completed")}
+            >
+              Terminées
+            </Button>
+            <Button
+              variant={statusFilter === "cancelled" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("cancelled")}
+            >
+              Manquées
+            </Button>
+            <Button
+              variant={statusFilter === "started" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("started")}
+            >
+              En cours
+            </Button>
           </div>
 
           {sessionsByDate?.length === 0 ? (

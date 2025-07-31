@@ -126,7 +126,7 @@ const SidebarContent = () => {
     if (ad?.id) {
       logAdEvent.mutate({ adId: ad.id, type: "view" });
     }
-  }, [ad?.id]);
+  }, [ad?.id, logAdEvent]);
 
   const handleClick = () => {
     if (ad?.url) {
