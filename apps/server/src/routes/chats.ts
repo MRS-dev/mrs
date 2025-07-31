@@ -21,12 +21,21 @@ const chatsRoutes = new Hono<HonoType>()
         title: chats.title,
         participants: chats.participants,
         lastUpdated: chats.lastUpdated,
-        lastMessage: sql`MAX(${messages.content})`.as("lastMessage"), // ✅ Agrégation
+        lastMessageContent: sql`(
+          SELECT content FROM ${messages} 
+          WHERE ${messages.chatId} = ${chats.id} 
+          ORDER BY ${messages.createdAt} DESC 
+          LIMIT 1
+        )`.as("lastMessageContent"),
+        lastMessageCreatedAt: sql`(
+          SELECT created_at FROM ${messages} 
+          WHERE ${messages.chatId} = ${chats.id} 
+          ORDER BY ${messages.createdAt} DESC 
+          LIMIT 1
+        )`.as("lastMessageCreatedAt"),
       })
       .from(chats)
-      .leftJoin(messages, eq(chats.id, messages.chatId))
       .where(sql`${chats.participants} @> ARRAY[${userId}]::uuid[]`)
-      .groupBy(chats.id)
       .orderBy(desc(chats.lastUpdated));
 
     return c.json(responses);

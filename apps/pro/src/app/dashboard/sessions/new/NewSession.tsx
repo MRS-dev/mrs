@@ -2,7 +2,7 @@
 
 import SidebarLayout from "@/components/core/SidebarLayout";
 import SidebarLayoutHeader from "@/components/core/SidebarLayoutHeader";
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar, Loader2, Plus } from "lucide-react";
@@ -14,15 +14,24 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModale";
 import { useCreateWorkoutSessionsByDates } from "@/queries/workoutSessions/useCreateWorkoutSessionsByDates";
 import { PickDatesModal } from "@/components/modals/PickDatesModal";
 import PatientPicker from "@/components/modals/PatientPickerModal";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function NewSession() {
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patientId");
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  
+  // Test du toast au chargement du composant
+  React.useEffect(() => {
+    toast.info("Composant NewSession chargé");
+  }, []);
   const { sessionId } = useParams<{
     sessionId: string;
   }>();
@@ -56,6 +65,47 @@ export default function NewSession() {
   const pickDateModal = useModal({
     defaultOpen: false,
   });
+
+  const handleCreateSession = () => {
+    createSessionByDatesMutation.mutate(
+      {
+        json: {
+          patientId: sessionWithDates.patientId || "",
+          program: sessionWithDates.program || {},
+          dates: sessionWithDates.dates || [],
+        },
+      },
+      {
+        onSuccess: () => {
+          console.log("Session created successfully!");
+          
+          // Toast de succès
+          toast.success("Séance créée avec succès !");
+          
+          // Invalider les requêtes pour mettre à jour les listes
+          queryClient.invalidateQueries({ 
+            queryKey: ["workoutSessions", sessionWithDates.patientId] 
+          });
+          queryClient.invalidateQueries({ 
+            queryKey: ["workoutSessions"] 
+          });
+          
+          // Délai plus long avant redirection
+          setTimeout(() => {
+            console.log("Redirecting to workout sessions...");
+            router.push(`/dashboard/patients/${sessionWithDates.patientId}/workout-sessions`);
+          }, 1000);
+        },
+        onError: (error) => {
+          console.error("Erreur lors de la création:", error);
+          toast.error("Erreur lors de la création", {
+            description: "Impossible de créer la séance. Veuillez réessayer.",
+            duration: 5000,
+          });
+        },
+      }
+    );
+  };
   const renderDatePickerLabel = () => {
     if (!sessionWithDates.dates.length) {
       return "Sélectionner les dates";
@@ -77,15 +127,7 @@ export default function NewSession() {
             <div className="flex flex-row items-center space-x-3">
               <Button
                 variant="default"
-                onClick={() =>
-                  createSessionByDatesMutation.mutate({
-                    json: {
-                      patientId: sessionWithDates.patientId || "",
-                      program: sessionWithDates.program || {},
-                      dates: sessionWithDates.dates || [],
-                    },
-                  })
-                }
+                onClick={handleCreateSession}
                 disabled={isMutating}
               >
                 {isMutating ? (

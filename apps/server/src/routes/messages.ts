@@ -39,22 +39,17 @@ const messagesRoutes = new Hono<HonoType>()
         }
         const { content, chatId } = await c.req.json();
 
-        // Créer le message et mettre à jour lastUpdated du chat en une transaction
-        const [newMessage] = await db.transaction(async (tx) => {
-          // Insérer le nouveau message
-          const messageResult = await tx
-            .insert(messages)
-            .values({ content, chatId, senderId: userId || "" })
-            .returning();
+        // Insérer le nouveau message
+        const [newMessage] = await db
+          .insert(messages)
+          .values({ content, chatId, senderId: userId || "" })
+          .returning();
 
-          // Mettre à jour lastUpdated du chat
-          await tx
-            .update(chats)
-            .set({ lastUpdated: new Date() })
-            .where(eq(chats.id, chatId));
-
-          return messageResult;
-        });
+        // Mettre à jour lastUpdated du chat
+        await db
+          .update(chats)
+          .set({ lastUpdated: new Date() })
+          .where(eq(chats.id, chatId));
 
         console.log("🔊 Emitting newMessage to chatId:", chatId, newMessage);
         io.to(chatId).emit("newMessage", newMessage);
