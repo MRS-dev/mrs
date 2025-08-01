@@ -39,9 +39,9 @@ export const auth = betterAuth({
   plugins: [
     adminPlugin({
       ac,
-      roles, // seul "pro" est ajouté
-      defaultRole: "user", // “user” reste le rôle par défaut
-      adminRoles: ["admin"], // “admin” reste le super-admin
+      roles,
+      defaultRole: "user",
+      adminRoles: ["admin"],
     }),
     twoFactor({
       skipVerificationOnEnable: true,

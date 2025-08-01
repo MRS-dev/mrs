@@ -1,7 +1,14 @@
 import { Server as SocketIOServer } from "socket.io";
 
 // 🔒 Origines autorisées
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+const allowedOrigins = [
+  [
+    process.env.PRO_FRONTEND_URL!,
+    process.env.ADMIN_FRONTEND_URL!,
+    process.env.PATIENT_FRONTEND_URL!,
+    process.env.NEXT_PUBLIC_SERVER_URL!,
+  ],
+];
 
 // 📡 Instance Socket.IO sans serveur HTTP direct (on utilise .listen(port) dans index.ts)
 export const io = new SocketIOServer({
@@ -53,7 +60,9 @@ export const setupSocketHandlers = (io: SocketIOServer) => {
 
     socket.on("sendMessage", async (messageData) => {
       try {
-        console.log(`📤 Réception d'un message pour le chat : ${messageData.chatId}`);
+        console.log(
+          `📤 Réception d'un message pour le chat : ${messageData.chatId}`
+        );
         // Émettre le message à tous les participants du chat
         io.to(messageData.chatId).emit("newMessage", messageData);
       } catch (error) {
