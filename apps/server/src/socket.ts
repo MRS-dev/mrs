@@ -2,12 +2,10 @@ import { Server as SocketIOServer } from "socket.io";
 
 // 🔒 Origines autorisées
 const allowedOrigins = [
-  [
-    process.env.PRO_FRONTEND_URL!,
-    process.env.ADMIN_FRONTEND_URL!,
-    process.env.PATIENT_FRONTEND_URL!,
-    process.env.NEXT_PUBLIC_SERVER_URL!,
-  ],
+  process.env.PRO_FRONTEND_URL!,
+  process.env.ADMIN_FRONTEND_URL!,
+  process.env.PATIENT_FRONTEND_URL!,
+  process.env.NEXT_PUBLIC_SERVER_URL!,
 ];
 
 // 📡 Instance Socket.IO sans serveur HTTP direct (on utilise .listen(port) dans index.ts)
